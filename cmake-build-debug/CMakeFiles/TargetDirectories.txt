@@ -1,3 +1,3 @@
-C:/Users/Ana Carolina/CLionProjects/Project_DA/cmake-build-debug/CMakeFiles/Project_DA.dir
-C:/Users/Ana Carolina/CLionProjects/Project_DA/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Ana Carolina/CLionProjects/Project_DA/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/maria/Documents/Uni/2º ano/2/DA/project/cmake-build-debug/CMakeFiles/Project_DA.dir
+C:/Users/maria/Documents/Uni/2º ano/2/DA/project/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/maria/Documents/Uni/2º ano/2/DA/project/cmake-build-debug/CMakeFiles/rebuild_cache.dir
