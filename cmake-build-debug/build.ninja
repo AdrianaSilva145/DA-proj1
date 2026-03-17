@@ -49,11 +49,11 @@ cmake_ninja_workdir = C$:/Users/Ana$ Carolina/CLionProjects/Project_DA/cmake-bui
 
 build cmake_object_order_depends_target_Project_DA: phony || .
 
-build CMakeFiles/Project_DA.dir/main.cpp.obj: CXX_COMPILER__Project_DA_unscanned_Debug C$:/Users/Ana$ Carolina/CLionProjects/Project_DA/main.cpp || cmake_object_order_depends_target_Project_DA
-  DEP_FILE = CMakeFiles\Project_DA.dir\main.cpp.obj.d
+build CMakeFiles/Project_DA.dir/src/main.cpp.obj: CXX_COMPILER__Project_DA_unscanned_Debug C$:/Users/Ana$ Carolina/CLionProjects/Project_DA/src/main.cpp || cmake_object_order_depends_target_Project_DA
+  DEP_FILE = CMakeFiles\Project_DA.dir\src\main.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\Project_DA.dir
-  OBJECT_FILE_DIR = CMakeFiles\Project_DA.dir
+  OBJECT_FILE_DIR = CMakeFiles\Project_DA.dir\src
   TARGET_COMPILE_PDB = CMakeFiles\Project_DA.dir\
   TARGET_PDB = Project_DA.pdb
 
@@ -65,7 +65,7 @@ build CMakeFiles/Project_DA.dir/main.cpp.obj: CXX_COMPILER__Project_DA_unscanned
 #############################################
 # Link the executable Project_DA.exe
 
-build Project_DA.exe: CXX_EXECUTABLE_LINKER__Project_DA_Debug CMakeFiles/Project_DA.dir/main.cpp.obj
+build Project_DA.exe: CXX_EXECUTABLE_LINKER__Project_DA_Debug CMakeFiles/Project_DA.dir/src/main.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Project_DA.dir

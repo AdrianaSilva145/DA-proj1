@@ -10,95 +10,150 @@ bool match(const Submission &s, const Reviewer &r) {
             s.secondaryTopic == r.secondaryExpertise);
 }
 
-bool Assignment::generateAssignment(const std::vector<Submission> &subs,
-                                    const std::vector<Reviewer> &revs,
-                                    const Parameters &params,
-                                    const Control &ctrl,
-                                    const std::string &outputFile)
+void Assignment::generateAssignment(const vector<Submission>& submissions,
+                                    const vector<Reviewer>& reviewers,
+                                    const Parameters& params,
+                                    const Control& control,
+                                    const string& outputFile)
 {
+    // 1. Construir grafo
     Graph<int> g;
 
-    const int SOURCE = -1;
-    const int SINK   = -2;
+    int source = -1;
+    int sink   = -2;
 
-    g.addVertex(SOURCE);
-    g.addVertex(SINK);
+    g.addVertex(source);
+    g.addVertex(sink);
 
-    // Add submission and reviewer nodes
-    for (auto &s : subs) g.addVertex(s.id);
-    for (auto &r : revs) g.addVertex(r.id);
+    matchEdges.clear();
 
-    // SOURCE → SUBMISSIONS
-    for (auto &s : subs) {
-        auto v1 = g.findVertex(SOURCE);
-        auto v2 = g.findVertex(s.id);
-
-        auto e1 = v1->addEdge(v2, params.MinReviewsPerSubmission);
-        auto e2 = v2->addEdge(v1, 0);
-
-        e1->setReverse(e2);
-        e2->setReverse(e1);
-        e1->setFlow(0);
-        e2->setFlow(0);
+    // Criar nós das submissões
+    vector<int> subNode(submissions.size());
+    for (int i = 0; i < submissions.size(); i++) {
+        subNode[i] = submissions[i].id + 1000;
+        g.addVertex(subNode[i]);
+        g.addEdge(source, subNode[i], params.MinReviewsPerSubmission);
     }
 
-    // SUBMISSIONS → REVIEWERS
-    for (auto &s : subs) {
-        for (auto &r : revs) {
-            if (match(s, r)) {
-                auto v1 = g.findVertex(s.id);
-                auto v2 = g.findVertex(r.id);
+    // Criar nós dos reviewers
+    vector<int> revNode(reviewers.size());
+    for (int i = 0; i < reviewers.size(); i++) {
+        revNode[i] = reviewers[i].id + 2000;
+        g.addVertex(revNode[i]);
+        g.addEdge(revNode[i], sink, params.MaxReviewsPerReviewer);
+    }
 
-                auto e1 = v1->addEdge(v2, 1);
-                auto e2 = v2->addEdge(v1, 0);
+    // Criar arestas SUBMISSION → REVIEWER
+    for (int s = 0; s < submissions.size(); s++) {
+        for (int r = 0; r < reviewers.size(); r++) {
 
-                e1->setReverse(e2);
-                e2->setReverse(e1);
-                e1->setFlow(0);
-                e2->setFlow(0);
+            if (submissions[s].matches(reviewers[r])) {
+                Edge<int>* e = g.addEdge(subNode[s], revNode[r], 1);
+                matchEdges.push_back({s, r, e});
             }
         }
     }
 
-    // REVIEWERS → SINK
-    for (auto &r : revs) {
-        auto v1 = g.findVertex(r.id);
-        auto v2 = g.findVertex(SINK);
+    // 2. Correr MaxFlow
+    int flow = MaxFlow::edmondsKarp(g, source, sink);
 
-        auto e1 = v1->addEdge(v2, params.MaxReviewsPerReviewer);
-        auto e2 = v2->addEdge(v1, 0);
+    // 3. Abrir ficheiro
+    ofstream out(outputFile);
+    if (!out.is_open()) return;
 
-        e1->setReverse(e2);
-        e2->setReverse(e1);
-        e1->setFlow(0);
-        e2->setFlow(0);
+    // 4. Escrever SUBMISSION → REVIEWER
+    out << "#SubmissionId,ReviewerId,Match\n";
+
+    int total = 0;
+    vector<int> count(submissions.size(), 0);
+
+    for (auto &m : matchEdges) {
+        if (m.edge->getFlow() == 1) {
+            out << submissions[m.submissionIndex].id << ", "
+                << reviewers[m.reviewerIndex].id << ", "
+                << submissions[m.submissionIndex].primaryTopic << "\n";
+
+            count[m.submissionIndex]++;
+            total++;
+        }
     }
 
-    // Run Max-Flow
-    int flow = MaxFlow::edmondsKarp(g, SOURCE, SINK);
-    int required = subs.size() * params.MinReviewsPerSubmission;
+    // 5. Escrever REVIEWER → SUBMISSION
+    out << "#ReviewerId,SubmissionId,Match\n";
+
+    for (auto &m : matchEdges) {
+        if (m.edge->getFlow() == 1) {
+            out << reviewers[m.reviewerIndex].id << ", "
+                << submissions[m.submissionIndex].id << ", "
+                << submissions[m.submissionIndex].primaryTopic << "\n";
+        }
+    }
+
+    // 6. Total
+    out << "#Total: " << total << "\n";
+
+    // 7. Missing Reviews
+    int required = submissions.size() * params.MinReviewsPerSubmission;
 
     if (flow != required) {
-        std::cout << "Assignment impossible (insufficient reviewer capacity).\n";
-        return false;
-    }
+        out << "#SubmissionId,Domain,MissingReviews\n";
 
-    // Write output
-    std::ofstream out(outputFile);
-    out << "Submission,Reviewer\n";
-
-    for (auto v : g.getVertexSet()) {
-        int sid = v->getInfo();
-        if (sid < 0) continue;
-
-        for (auto e : v->getAdj()) {
-            if (e->getFlow() == 1) {
-                out << sid << "," << e->getDest()->getInfo() << "\n";
+        for (int s = 0; s < submissions.size(); s++) {
+            int missing = params.MinReviewsPerSubmission - count[s];
+            if (missing > 0) {
+                out << submissions[s].id << ", "
+                    << submissions[s].primaryTopic << ", "
+                    << missing << "\n";
             }
         }
+    }
+
+    // 8. Risk Analysis
+    if (control.riskAnalysis == 1) {
+        out << "#Risk Analysis: 1\n";
+
+        vector<bool> used(reviewers.size(), false);
+
+        for (auto &m : matchEdges) {
+            if (m.edge->getFlow() == 1)
+                used[m.reviewerIndex] = true;
+        }
+
+        for (int i = 0; i < reviewers.size(); i++) {
+            if (!used[i]) {
+                out << reviewers[i].id;
+                if (i < reviewers.size() - 1) out << ", ";
+            }
+        }
+        out << "\n";
     }
 
     out.close();
-    std::cout << "Assignment written to " << outputFile << "\n";
-    return true;
+}
+
+std::vector<int> Assignment::riskAnalysis1(const std::vector<Submission> &subs,
+                                           const std::vector<Reviewer> &revs,
+                                           const Parameters &params)
+{
+    std::vector<int> riskySubmissions;
+
+    // Exemplo simples: marcar submissões sem reviewers compatíveis
+    for (const auto &s : subs) {
+        bool hasMatch = false;
+
+        for (const auto &r : revs) {
+            if (s.primaryTopic == r.primaryExpertise ||
+                s.primaryTopic == r.secondaryExpertise ||
+                s.secondaryTopic == r.primaryExpertise ||
+                s.secondaryTopic == r.secondaryExpertise) {
+                hasMatch = true;
+                break;
+                }
+        }
+
+        if (!hasMatch)
+            riskySubmissions.push_back(s.id);
+    }
+
+    return riskySubmissions;
 }
