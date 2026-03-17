@@ -2,8 +2,8 @@
 #define PARAMETERS_H
 
 struct Parameters {
-    int minReviewsPerSubmission = 0; // caso nao seja definido
-    int maxReviewsPerReviewer = 0;
+    int MinReviewsPerSubmission = 0; // caso nao seja definido
+    int MaxReviewsPerReviewer = 0;
     int primaryReviewerExpertise = 0;
     int secondaryReviewerExpertise = 0;
     int primarySubmissionDomain = 0;

@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
         cout << "Executing batch mode with file: " << inputfile << endl;
 
-        if (!Parser::parseFile(inputfile, submissions, reviewers, params, control)) {
+        if (!Parser::parseCSV(inputfile, submissions, reviewers, params, control)) {
             cerr << "Error: could not read input file.\n";
             return 1;
         }
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
             cout << "Enter file name: ";
             cin >> filename;
 
-            if (Parser::parseFile(filename, submissions, reviewers, params, control)) {
+            if (Parser::parseCSV(filename, submissions, reviewers, params, control)) {
                 cout << "File loaded successfully.\n";
                 fileLoaded = true;
                 assignmentDone = false;

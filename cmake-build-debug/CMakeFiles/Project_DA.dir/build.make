@@ -68,28 +68,28 @@ include CMakeFiles/Project_DA.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Project_DA.dir/flags.make
 
-CMakeFiles/Project_DA.dir/main.cpp.obj: CMakeFiles/Project_DA.dir/flags.make
-CMakeFiles/Project_DA.dir/main.cpp.obj: C:/Users/maria/Documents/Uni/2º\ ano/2/DA/project/main.cpp
-CMakeFiles/Project_DA.dir/main.cpp.obj: CMakeFiles/Project_DA.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\maria\Documents\Uni\2º ano\2\DA\project\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Project_DA.dir/main.cpp.obj"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Project_DA.dir/main.cpp.obj -MF CMakeFiles\Project_DA.dir\main.cpp.obj.d -o CMakeFiles\Project_DA.dir\main.cpp.obj -c "C:\Users\maria\Documents\Uni\2º ano\2\DA\project\main.cpp"
+CMakeFiles/Project_DA.dir/src/main.cpp.obj: CMakeFiles/Project_DA.dir/flags.make
+CMakeFiles/Project_DA.dir/src/main.cpp.obj: C:/Users/maria/Documents/Uni/2º\ ano/2/DA/project/src/main.cpp
+CMakeFiles/Project_DA.dir/src/main.cpp.obj: CMakeFiles/Project_DA.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\maria\Documents\Uni\2º ano\2\DA\project\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Project_DA.dir/src/main.cpp.obj"
+	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Project_DA.dir/src/main.cpp.obj -MF CMakeFiles\Project_DA.dir\src\main.cpp.obj.d -o CMakeFiles\Project_DA.dir\src\main.cpp.obj -c "C:\Users\maria\Documents\Uni\2º ano\2\DA\project\src\main.cpp"
 
-CMakeFiles/Project_DA.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Project_DA.dir/main.cpp.i"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\maria\Documents\Uni\2º ano\2\DA\project\main.cpp" > CMakeFiles\Project_DA.dir\main.cpp.i
+CMakeFiles/Project_DA.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Project_DA.dir/src/main.cpp.i"
+	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\maria\Documents\Uni\2º ano\2\DA\project\src\main.cpp" > CMakeFiles\Project_DA.dir\src\main.cpp.i
 
-CMakeFiles/Project_DA.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Project_DA.dir/main.cpp.s"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\maria\Documents\Uni\2º ano\2\DA\project\main.cpp" -o CMakeFiles\Project_DA.dir\main.cpp.s
+CMakeFiles/Project_DA.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Project_DA.dir/src/main.cpp.s"
+	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\maria\Documents\Uni\2º ano\2\DA\project\src\main.cpp" -o CMakeFiles\Project_DA.dir\src\main.cpp.s
 
 # Object files for target Project_DA
 Project_DA_OBJECTS = \
-"CMakeFiles/Project_DA.dir/main.cpp.obj"
+"CMakeFiles/Project_DA.dir/src/main.cpp.obj"
 
 # External object files for target Project_DA
 Project_DA_EXTERNAL_OBJECTS =
 
-Project_DA.exe: CMakeFiles/Project_DA.dir/main.cpp.obj
+Project_DA.exe: CMakeFiles/Project_DA.dir/src/main.cpp.obj
 Project_DA.exe: CMakeFiles/Project_DA.dir/build.make
 Project_DA.exe: CMakeFiles/Project_DA.dir/linkLibs.rsp
 Project_DA.exe: CMakeFiles/Project_DA.dir/objects1.rsp

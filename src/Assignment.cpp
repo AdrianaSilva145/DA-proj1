@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-bool match(const Submission &s, const Reviewer &r, const Parameters &p) {
+bool match(const Submission &s, const Reviewer &r) {
     return (s.primaryTopic == r.primaryExpertise ||
             s.primaryTopic == r.secondaryExpertise ||
             s.secondaryTopic == r.primaryExpertise ||
@@ -18,21 +18,22 @@ bool Assignment::generateAssignment(const std::vector<Submission> &subs,
 {
     Graph<int> g;
 
-    int SOURCE = -1;
-    int SINK   = -2;
+    const int SOURCE = -1;
+    const int SINK   = -2;
 
     g.addVertex(SOURCE);
     g.addVertex(SINK);
 
+    // Add submission and reviewer nodes
     for (auto &s : subs) g.addVertex(s.id);
     for (auto &r : revs) g.addVertex(r.id);
 
-    // source → submissions
+    // SOURCE → SUBMISSIONS
     for (auto &s : subs) {
         auto v1 = g.findVertex(SOURCE);
         auto v2 = g.findVertex(s.id);
 
-        auto e1 = v1->addEdge(v2, params.minReviewsPerSubmission);
+        auto e1 = v1->addEdge(v2, params.MinReviewsPerSubmission);
         auto e2 = v2->addEdge(v1, 0);
 
         e1->setReverse(e2);
@@ -41,10 +42,10 @@ bool Assignment::generateAssignment(const std::vector<Submission> &subs,
         e2->setFlow(0);
     }
 
-    // submissions → reviewers
+    // SUBMISSIONS → REVIEWERS
     for (auto &s : subs) {
         for (auto &r : revs) {
-            if (match(s, r, params)) {
+            if (match(s, r)) {
                 auto v1 = g.findVertex(s.id);
                 auto v2 = g.findVertex(r.id);
 
@@ -59,12 +60,12 @@ bool Assignment::generateAssignment(const std::vector<Submission> &subs,
         }
     }
 
-    // reviewers → sink
+    // REVIEWERS → SINK
     for (auto &r : revs) {
         auto v1 = g.findVertex(r.id);
         auto v2 = g.findVertex(SINK);
 
-        auto e1 = v1->addEdge(v2, params.maxReviewsPerReviewer);
+        auto e1 = v1->addEdge(v2, params.MaxReviewsPerReviewer);
         auto e2 = v2->addEdge(v1, 0);
 
         e1->setReverse(e2);
@@ -73,16 +74,16 @@ bool Assignment::generateAssignment(const std::vector<Submission> &subs,
         e2->setFlow(0);
     }
 
+    // Run Max-Flow
     int flow = MaxFlow::edmondsKarp(g, SOURCE, SINK);
-
-    int required = subs.size() * params.minReviewsPerSubmission;
+    int required = subs.size() * params.MinReviewsPerSubmission;
 
     if (flow != required) {
-        std::cout << "Assignment impossivel.\n";
+        std::cout << "Assignment impossible (insufficient reviewer capacity).\n";
         return false;
     }
 
-    // escrever output
+    // Write output
     std::ofstream out(outputFile);
     out << "Submission,Reviewer\n";
 
@@ -98,6 +99,6 @@ bool Assignment::generateAssignment(const std::vector<Submission> &subs,
     }
 
     out.close();
-    std::cout << "Assignment gerado em " << outputFile << "\n";
+    std::cout << "Assignment written to " << outputFile << "\n";
     return true;
 }

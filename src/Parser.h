@@ -9,7 +9,7 @@
 #include "Control.h"
 
 struct Parser {
-    static bool parseFile(const std::string &filename, std::vector<Submission> &submissions,
+    static bool parseCSV(const std::string &filename, std::vector<Submission> &submissions,
                         std::vector<Reviewer> &reviewers, Parameters &params, Control &control);
 
 };

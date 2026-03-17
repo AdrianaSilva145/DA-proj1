@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 enum ParseState {
     NONE,
@@ -105,13 +106,13 @@ bool parseCSV(const std::string& filepath, std::vector<Submission>& submissions,
             else if (key == "MaxReviewsPerReviewer")
                 params.MaxReviewsPerReviewer = std::stoi(value);
             else if (key == "PrimaryReviewerExpertise")
-                params.PrimaryReviewerExpertise = std::stoi(value);
+                params.primaryReviewerExpertise = std::stoi(value);
             else if (key == "SecondaryReviewerExpertise")
-                params.SecondaryReviewerExpertise = std::stoi(value);
+                params.secondaryReviewerExpertise = std::stoi(value);
             else if (key == "PrimarySubmissionDomain")
-                params.PrimarySubmissionDomain = std::stoi(value);
+                params.primarySubmissionDomain = std::stoi(value);
             else if (key == "SecondarySubmissionDomain")
-                params.SecondarySubmissionDomain = std::stoi(value);
+                params.secondarySubmissionDomain = std::stoi(value);
 
             break;
         }
@@ -124,14 +125,14 @@ bool parseCSV(const std::string& filepath, std::vector<Submission>& submissions,
             std::getline(ss, value, ',');
 
             if (key == "GenerateAssignments")
-                control.GenerateAssignments = std::stoi(value);
+                control.generateAssignments = std::stoi(value);
             else if (key == "RiskAnalysis")
-                control.RiskAnalysis = std::stoi(value);
+                control.riskAnalysis = std::stoi(value);
             else if (key == "OutputFileName") {
 
                 if (value.size() > 2 && value.front() == '"' && value.back() == '"') // se existir aspas remover
                     value = value.substr(1, value.size() - 2);
-                control.OutputFileName = value;
+                control.outputFileName = value;
             }
 
             break;
