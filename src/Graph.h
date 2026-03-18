@@ -125,7 +125,13 @@ public:
     bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
 
     int getNumVertex() const;
-
+    Vertex<T>* getVertex(const T &id) {
+        for (auto v : getVertexSet()) {
+            if (v->getInfo() == id)
+                return v;
+        }
+        return nullptr;
+    }
     std::vector<Vertex<T> *> getVertexSet() const;
 
 
@@ -189,6 +195,7 @@ bool Vertex<T>::removeEdge(T in) {
     return removedEdge;
 }
 
+
 /*
  * Auxiliary function to remove an outgoing edge of a vertex.
  */
@@ -233,7 +240,7 @@ void Vertex<T>::setNum(int value) {
 }
 
 template <class T>
-std::vector<Edge<T>*> Vertex<T>::getAdj() const {
+ std::vector<Edge<T>*> Vertex<T>::getAdj() const {
     return this->adj;
 }
 
@@ -316,7 +323,7 @@ void Vertex<T>::deleteEdge(Edge<T> *edge) {
 /********************** Edge  ****************************/
 
 template <class T>
-Edge<T>::Edge(Vertex<T> *orig, Vertex<T> *dest, double w): orig(orig), dest(dest), weight(w) {}
+Edge<T>::Edge(Vertex<T> *orig, Vertex<T> *dest, double w): orig(orig), dest(dest), weight(w),flow(0) {}
 
 template <class T>
 Vertex<T> * Edge<T>::getDest() const {
@@ -441,7 +448,17 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
-    v1->addEdge(v2, w);
+
+    // Aresta forward (capacidade w)
+    auto e1 = v1->addEdge(v2, w);
+
+    // Aresta residual (capacidade 0)
+    auto e2 = v2->addEdge(v1, 0);
+
+    // Ligar as duas
+    e1->setReverse(e2);
+    e2->setReverse(e1);
+
     return true;
 }
 
