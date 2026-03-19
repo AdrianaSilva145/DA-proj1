@@ -124,6 +124,8 @@ public:
     bool removeEdge(const T &source, const T &dest);
     bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
 
+    void clear();
+
     int getNumVertex() const;
     Vertex<T>* getVertex(const T &id) {
         for (auto v : getVertexSet()) {
@@ -511,6 +513,15 @@ template <class T>
 Graph<T>::~Graph() {
     deleteMatrix(distMatrix, vertexSet.size());
     deleteMatrix(pathMatrix, vertexSet.size());
+}
+
+template<class T>
+void Graph<T>::clear() {
+    for (auto v: vertexSet) {
+        v->removeOutgoingEdges();
+        delete v;
+    }
+    vertexSet.clear();
 }
 
 #endif /* DA_TP_CLASSES_GRAPH */

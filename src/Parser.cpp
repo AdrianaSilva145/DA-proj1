@@ -39,6 +39,9 @@ static std::string clean(const std::string &s) {
 bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& submissions,
                       std::vector<Reviewer>& reviewers, Parameters& params, Control& control)
 {
+    submissions.clear();
+    reviewers.clear();
+
     std::ifstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "Error opening file " << filepath << std::endl;

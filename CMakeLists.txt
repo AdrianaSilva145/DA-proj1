@@ -3,4 +3,6 @@ project(Project_DA)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Project_DA src/main.cpp)
+add_executable(Project_DA src/main.cpp
+        src/Assignment.cpp
+        src/Parser.cpp)

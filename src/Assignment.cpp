@@ -3,8 +3,23 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-bool match(const Submission &s, const Reviewer &r) {
-    return (s.primaryTopic == r.primaryExpertise);
+bool match(const Submission &s, const Reviewer &r, int mode) {
+    if (mode==1) {
+        return (s.primaryTopic == r.primaryExpertise);
+    }
+    else if (mode==2) {
+        return (s.primaryTopic == r.primaryExpertise)
+        || (s.secondaryTopic !=0 && s.secondaryTopic == r.secondaryExpertise);
+    }
+    else if (mode==3) {
+        bool pSpR = (s.primaryTopic == r.primaryExpertise);
+        bool pSsR = (r.secondaryExpertise != 0 && s.primaryTopic == r.secondaryExpertise);
+        bool sSpR = (s.secondaryTopic != 0 && s.secondaryTopic == r.primaryExpertise);
+        bool sSsR = (s.secondaryTopic != 0 && s.secondaryTopic == r.secondaryExpertise);
+        return pSpR || sSsR || sSpR || pSsR;
+    }
+    return false;
+
 }
 
 
@@ -65,7 +80,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     for (size_t s = 0; s < submissions.size(); s++) {
         for (size_t r = 0; r < sortedReviewers.size(); r++) {
 
-            if (match(submissions[s], sortedReviewers[r])) {
+            if (match(submissions[s], sortedReviewers[r], control.generateAssignments)) {
 
                 g.addEdge(subNode[s], revNode[r], 1);
 
@@ -89,6 +104,11 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
     // MaxFlow
     int flow = MaxFlow::edmondsKarp(g, source, sink);
+
+    // se o generateAssignments for 0, o flow corre na mesma mas não há output gerado
+    if (control.generateAssignments == 0 && control.riskAnalysis == 0) {
+        return false;
+    }
 
     // Abrir ficheiro
     std::ofstream out(outputFile);
@@ -143,6 +163,49 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
     // Total
     out << "#Total: " << total << "\n";
+
+    //Parte do RiskAnalysis
+
+    if (control.riskAnalysis == 1) {
+
+        int maxPossibleFlow = submissions.size() * params.MinReviewsPerSubmission;
+        if (total < maxPossibleFlow) {
+            out << "#SubmissionId,Domain,MissingReviews\n";
+            for (size_t i = 0; i< submissions.size(); i++) {
+                int missing = params.MinReviewsPerSubmission - count[i];
+                if (missing > 0) {
+                    out << submissions[i].id << ", "
+                    << submissions[i].primaryTopic << ", "
+                    << missing << "\n";
+                }
+            }
+        }
+        else {
+            auto resetFlows = [&g] {
+                for (auto v : g.getVertexSet()) {
+                    for (auto e : v->getAdj()) {
+                        e->setFlow(0);
+                    }
+                }
+            };
+
+            std::vector<int> criticalReviewers;
+
+            for (size_t i = 0; i< sortedReviewers.size(); i++) {
+                int revId = sortedReviewers[i].id;
+                int rNode = revNode[i];
+
+                g.removeEdge(rNode,sink);
+                resetFlows();
+
+                int newFlow = MaxFlow::edmondsKarp(g, source, sink);
+
+                if (newFlow < maxPossibleFlow) {
+                    criticalReviewers.push_back(revId);
+                }
+            }
+        }
+    }
 
     return true;
 }
