@@ -166,47 +166,69 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
     //Parte do RiskAnalysis
 
-    if (control.riskAnalysis == 1) {
+    int maxPossibleFlow = submissions.size() * params.MinReviewsPerSubmission;
 
-        int maxPossibleFlow = submissions.size() * params.MinReviewsPerSubmission;
-        if (total < maxPossibleFlow) {
-            out << "#SubmissionId,Domain,MissingReviews\n";
-            for (size_t i = 0; i< submissions.size(); i++) {
-                int missing = params.MinReviewsPerSubmission - count[i];
-                if (missing > 0) {
+    if (total < maxPossibleFlow) {
+        out << "#SubmissionId,Domain,MissingReviews\n";
+        for (size_t i = 0; i< submissions.size(); i++) {int missing = params.MinReviewsPerSubmission - count[i];
+            if (missing > 0) {
                     out << submissions[i].id << ", "
                     << submissions[i].primaryTopic << ", "
                     << missing << "\n";
                 }
             }
         }
-        else {
-            auto resetFlows = [&g] {
-                for (auto v : g.getVertexSet()) {
-                    for (auto e : v->getAdj()) {
-                        e->setFlow(0);
-                    }
-                }
-            };
-
-            std::vector<int> criticalReviewers;
-
-            for (size_t i = 0; i< sortedReviewers.size(); i++) {
-                int revId = sortedReviewers[i].id;
-                int rNode = revNode[i];
-
-                g.removeEdge(rNode,sink);
-                resetFlows();
-
-                int newFlow = MaxFlow::edmondsKarp(g, source, sink);
-
-                if (newFlow < maxPossibleFlow) {
-                    criticalReviewers.push_back(revId);
+    else if (control.riskAnalysis >= 1) {
+        int K = control.riskAnalysis;
+        auto resetFlows = [&g] {
+            for (auto v : g.getVertexSet()) {
+                for (auto e : v->getAdj()) {
+                    e->setFlow(0);
                 }
             }
-        }
-    }
+        };
 
+        std::vector<std::vector<int>> criticalCombinations;
+        int N = sortedReviewers.size();
+
+        if (K>N) K = N;     //apenas prevencao: se pedirem para falhar mais reviewers do que aqueles que existem
+
+        std::vector<bool> selector(N, false);
+        std::fill(selector.end() - K, selector.end(), true);    //gerar combinacoes
+
+        do {
+            std::vector<int> droppedRev;
+            std::vector<int> droppedNodes;
+
+            for (int i = 0; i < N; i++) {
+                if (selector[i]) {
+                    droppedRev.push_back(sortedReviewers[i].id);
+                    droppedNodes.push_back(revNode[i]);
+                    g.removeEdge(revNode[i], sink);
+                }
+            }
+
+            resetFlows();
+            int newFlow = MaxFlow::edmondsKarp(g, source, sink);
+            if (newFlow < maxPossibleFlow) {        //se o desaparecimento comprometeu o fluxo
+                criticalCombinations.push_back(droppedRev);
+            }
+
+            for (int rNode : droppedNodes) {
+                g.addEdge(rNode,sink, params.MaxReviewsPerReviewer);
+            }
+        } while (std::next_permutation(selector.begin(), selector.end()));
+
+        if (criticalCombinations.empty()) {     //ta fixe, nao ha remocoes que comrpometem
+            out << "#Risk Analysis: 1\n";
+        }
+        else {
+            out << "#Risk Analysis: 0\n";
+        }
+
+
+    }
+    out.close();
     return true;
 }
 
