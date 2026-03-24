@@ -1,24 +1,24 @@
 #include "Assignment.h"
 #include "MaxFlow.h"
 #include <fstream>
-#include <iostream>
 #include <vector>
-bool match(const Submission &s, const Reviewer &r, int mode) {
+
+
+int match(const Submission &s, const Reviewer &r, int mode) {
     if (mode==1) {
-        return (s.primaryTopic == r.primaryExpertise);
+        if (s.primaryTopic == r.primaryExpertise) return s.primaryTopic;
     }
     else if (mode==2) {
-        return (s.primaryTopic == r.primaryExpertise)
-        || (s.secondaryTopic !=0 && s.secondaryTopic == r.secondaryExpertise);
+        if (s.primaryTopic == r.primaryExpertise) return s.primaryTopic;
+        if (s.secondaryTopic !=0 && s.secondaryTopic == r.primaryExpertise) return s.secondaryTopic;
     }
     else if (mode==3) {
-        bool pSpR = (s.primaryTopic == r.primaryExpertise);
-        bool pSsR = (r.secondaryExpertise != 0 && s.primaryTopic == r.secondaryExpertise);
-        bool sSpR = (s.secondaryTopic != 0 && s.secondaryTopic == r.primaryExpertise);
-        bool sSsR = (s.secondaryTopic != 0 && s.secondaryTopic == r.secondaryExpertise);
-        return pSpR || sSsR || sSpR || pSsR;
+        if (s.primaryTopic == r.primaryExpertise) return s.primaryTopic;
+        if (s.secondaryTopic != 0 && s.secondaryTopic == r.primaryExpertise) return s.secondaryTopic;
+        if (r.secondaryExpertise != 0 && s.primaryTopic == r.secondaryExpertise) return s.primaryTopic;
+        if (s.secondaryTopic != 0 && r.secondaryExpertise !=0 && s.secondaryTopic == r.secondaryExpertise) return s.secondaryTopic;
     }
-    return false;
+    return 0;
 
 }
 
@@ -71,7 +71,10 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     struct MatchEdge {
         int submissionIndex;
         int reviewerId;
+        int matchDomain;
         Edge<int>* edge;
+
+        MatchEdge(size_t s, int r, int d, Edge<int>* e) : submissionIndex(s), reviewerId(r), matchDomain(d), edge(e) {}
     };
 
     std::vector<MatchEdge> matchEdges;
@@ -80,7 +83,9 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     for (size_t s = 0; s < submissions.size(); s++) {
         for (size_t r = 0; r < sortedReviewers.size(); r++) {
 
-            if (match(submissions[s], sortedReviewers[r], control.generateAssignments)) {
+            int mDomain = match(submissions[s], sortedReviewers[r], control.generateAssignments);
+
+            if (mDomain>0) {
 
                 g.addEdge(subNode[s], revNode[r], 1);
 
@@ -97,7 +102,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
                 if (!e) continue;
 
-                matchEdges.push_back({ (int)s, sortedReviewers[r].id, e });
+                matchEdges.push_back({ s, sortedReviewers[r].id, mDomain, e });
             }
         }
     }
@@ -133,7 +138,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
         if (m.edge->getFlow() == 1) {
             out << submissions[m.submissionIndex].id << ", "
                 << m.reviewerId << ", "
-                << submissions[m.submissionIndex].primaryTopic << "\n";
+                << m.matchDomain << "\n";       //Corrigi aqui
 
             count[m.submissionIndex]++;
             total++;
@@ -158,7 +163,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     for (auto &m : reviewerOrder) {
         out << m.reviewerId << ", "
             << submissions[m.submissionIndex].id << ", "
-            << submissions[m.submissionIndex].primaryTopic << "\n";
+            << m.matchDomain << "\n";
     }
 
     // Total
@@ -219,11 +224,26 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
             }
         } while (std::next_permutation(selector.begin(), selector.end()));
 
-        if (criticalCombinations.empty()) {     //ta fixe, nao ha remocoes que comrpometem
-            out << "#Risk Analysis: 1\n";
-        }
-        else {
-            out << "#Risk Analysis: 0\n";
+        out << "#Risk Analysis: " << K << "\n";
+
+        std::sort(criticalCombinations.begin(), criticalCombinations.end());
+
+        if (!criticalCombinations.empty()) {
+
+            if (K==1) {
+                for (size_t i = 0; i < criticalCombinations.size(); i++) {
+                    out << criticalCombinations[i][0] << (i == criticalCombinations.size() - 1 ? "" : ", ");
+                }
+                out << "\n";
+            }
+            else {
+                for (const auto &c : criticalCombinations) {
+                    for (size_t i = 0; i < c.size(); i++) {
+                        out << c[i] << (i == c.size() - 1 ? "" : ", ");
+                    }
+                    out << "\n";
+                }
+            }
         }
 
 
