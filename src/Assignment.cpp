@@ -248,6 +248,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
 
     }
+    out.flush();
     out.close();
     return true;
 }

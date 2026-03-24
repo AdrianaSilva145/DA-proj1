@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 #include <cctype>
+#include <algorithm>
 
 enum ParseState {
     NONE,
@@ -169,9 +170,11 @@ bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& subm
                 control.generateAssignments = value.empty() ? 0 : std::stoi(value);
             else if (key == "RiskAnalysis")
                 control.riskAnalysis = value.empty() ? 0 : std::stoi(value);
-            else if (key == "OutputFileName")
+            else if (key == "OutputFileName") {
+                if (!value.empty() && value.front() == '"') value.erase(0,1);
+                if (!value.empty() && value.back() == '"') value.pop_back();
                 control.outputFileName = value;
-
+            }
             break;
         }
 

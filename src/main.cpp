@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
             cout << "Running Max-Flow Assignment...\n";
-            Assignment::generateAssignment(submissions, reviewers, params, control, "output.csv");
+            Assignment::generateAssignment(submissions, reviewers, params, control, control.outputFileName);
             assignmentDone = true;
             break;
 
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
                 cout << "No assignment has been generated yet.\n";
                 break;
             }
-            cout << "Results saved in output.csv\n";
+            cout << "Results saved in " << control.outputFileName << "\n";
             break;
 
         case 0:
