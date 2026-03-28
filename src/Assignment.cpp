@@ -1,11 +1,62 @@
 #include "Assignment.h"
 #include "MaxFlow.h"
 #include <fstream>
-#include <iostream>
 #include <vector>
-bool match(const Submission &s, const Reviewer &r) {
-    return (s.primaryTopic == r.primaryExpertise);
+
+
+int match(const Submission &s, const Reviewer &r, int mode) {
+
+    // MODE 1: primary-primary only
+    if (mode == 1) {
+        if (s.primaryTopic == r.primaryExpertise)
+            return s.primaryTopic;
+        return 0;
+    }
+
+    // MODE 2: use SECONDARY submission domain first
+    if (mode == 2) {
+
+        // 1) Try secondaryTopic first
+        if (s.secondaryTopic != 0 &&
+            s.secondaryTopic == r.primaryExpertise)
+            return s.secondaryTopic;
+
+        // 2) If no secondary match, try primaryTopic
+        if (s.primaryTopic == r.primaryExpertise)
+            return s.primaryTopic;
+
+        return 0;
+    }
+
+    // MODE 3: full generality
+    if (mode == 3) {
+
+        // primary-primary
+        if (s.primaryTopic == r.primaryExpertise)
+            return s.primaryTopic;
+
+        // secondary-primary
+        if (s.secondaryTopic != 0 &&
+            s.secondaryTopic == r.primaryExpertise)
+            return s.secondaryTopic;
+
+        // primary-secondary
+        if (r.secondaryExpertise != 0 &&
+            s.primaryTopic == r.secondaryExpertise)
+            return s.primaryTopic;
+
+        // secondary-secondary
+        if (s.secondaryTopic != 0 &&
+            r.secondaryExpertise != 0 &&
+            s.secondaryTopic == r.secondaryExpertise)
+            return s.secondaryTopic;
+
+        return 0;
+    }
+
+    return 0;
 }
+
 
 
 struct MatchEdge {
@@ -56,7 +107,10 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     struct MatchEdge {
         int submissionIndex;
         int reviewerId;
+        int matchDomain;
         Edge<int>* edge;
+
+        MatchEdge(size_t s, int r, int d, Edge<int>* e) : submissionIndex(s), reviewerId(r), matchDomain(d), edge(e) {}
     };
 
     std::vector<MatchEdge> matchEdges;
@@ -65,7 +119,9 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     for (size_t s = 0; s < submissions.size(); s++) {
         for (size_t r = 0; r < sortedReviewers.size(); r++) {
 
-            if (match(submissions[s], sortedReviewers[r])) {
+            int mDomain = match(submissions[s], sortedReviewers[r], control.generateAssignments);
+
+            if (mDomain>0) {
 
                 g.addEdge(subNode[s], revNode[r], 1);
 
@@ -82,13 +138,18 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
                 if (!e) continue;
 
-                matchEdges.push_back({ (int)s, sortedReviewers[r].id, e });
+                matchEdges.push_back({ s, sortedReviewers[r].id, mDomain, e });
             }
         }
     }
 
     // MaxFlow
     int flow = MaxFlow::edmondsKarp(g, source, sink);
+
+    // se o generateAssignments for 0, o flow corre na mesma mas não há output gerado
+    if (control.generateAssignments == 0 && control.riskAnalysis == 0) {
+        return false;
+    }
 
     // Abrir ficheiro
     std::ofstream out(outputFile);
@@ -113,7 +174,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
         if (m.edge->getFlow() == 1) {
             out << submissions[m.submissionIndex].id << ", "
                 << m.reviewerId << ", "
-                << submissions[m.submissionIndex].primaryTopic << "\n";
+                << m.matchDomain << "\n";       //Corrigi aqui
 
             count[m.submissionIndex]++;
             total++;
@@ -138,12 +199,93 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     for (auto &m : reviewerOrder) {
         out << m.reviewerId << ", "
             << submissions[m.submissionIndex].id << ", "
-            << submissions[m.submissionIndex].primaryTopic << "\n";
+            << m.matchDomain << "\n";
     }
 
     // Total
     out << "#Total: " << total << "\n";
 
+    //Parte do RiskAnalysis
+
+    int maxPossibleFlow = submissions.size() * params.MinReviewsPerSubmission;
+
+    if (total < maxPossibleFlow) {
+        out << "#SubmissionId,Domain,MissingReviews\n";
+        for (size_t i = 0; i< submissions.size(); i++) {int missing = params.MinReviewsPerSubmission - count[i];
+            if (missing > 0) {
+                    out << submissions[i].id << ", "
+                    << submissions[i].primaryTopic << ", "
+                    << missing << "\n";
+                }
+            }
+        }
+    else if (control.riskAnalysis >= 1) {
+        int K = control.riskAnalysis;
+        auto resetFlows = [&g] {
+            for (auto v : g.getVertexSet()) {
+                for (auto e : v->getAdj()) {
+                    e->setFlow(0);
+                }
+            }
+        };
+
+        std::vector<std::vector<int>> criticalCombinations;
+        int N = sortedReviewers.size();
+
+        if (K>N) K = N;     //apenas prevencao: se pedirem para falhar mais reviewers do que aqueles que existem
+
+        std::vector<bool> selector(N, false);
+        std::fill(selector.end() - K, selector.end(), true);    //gerar combinacoes
+
+        do {
+            std::vector<int> droppedRev;
+            std::vector<int> droppedNodes;
+
+            for (int i = 0; i < N; i++) {
+                if (selector[i]) {
+                    droppedRev.push_back(sortedReviewers[i].id);
+                    droppedNodes.push_back(revNode[i]);
+                    g.removeEdge(revNode[i], sink);
+                }
+            }
+
+            resetFlows();
+            int newFlow = MaxFlow::edmondsKarp(g, source, sink);
+            if (newFlow < maxPossibleFlow) {        //se o desaparecimento comprometeu o fluxo
+                criticalCombinations.push_back(droppedRev);
+            }
+
+            for (int rNode : droppedNodes) {
+                g.addEdge(rNode,sink, params.MaxReviewsPerReviewer);
+            }
+        } while (std::next_permutation(selector.begin(), selector.end()));
+
+        out << "#Risk Analysis: " << K << "\n";
+
+        std::sort(criticalCombinations.begin(), criticalCombinations.end());
+
+        if (!criticalCombinations.empty()) {
+
+            if (K==1) {
+                for (size_t i = 0; i < criticalCombinations.size(); i++) {
+                    out << criticalCombinations[i][0] << (i == criticalCombinations.size() - 1 ? "" : ", ");
+                }
+                out << "\n";
+            }
+            else {
+                for (const auto &c : criticalCombinations) {
+                    for (size_t i = 0; i < c.size(); i++) {
+                        out << c[i] << (i == c.size() - 1 ? "" : ", ");
+                    }
+                    out << "\n";
+                }
+            }
+        }
+
+
+    }
+    out.flush();
+    out.close();
     return true;
 }
 
