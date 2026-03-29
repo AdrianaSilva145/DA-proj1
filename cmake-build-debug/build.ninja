@@ -57,6 +57,22 @@ build CMakeFiles/Project_DA.dir/src/main.cpp.obj: CXX_COMPILER__Project_DA_unsca
   TARGET_COMPILE_PDB = CMakeFiles\Project_DA.dir\
   TARGET_PDB = Project_DA.pdb
 
+build CMakeFiles/Project_DA.dir/src/Assignment.cpp.obj: CXX_COMPILER__Project_DA_unscanned_Debug C$:/Users/Ana$ Carolina/CLionProjects/Project_DA/src/Assignment.cpp || cmake_object_order_depends_target_Project_DA
+  DEP_FILE = CMakeFiles\Project_DA.dir\src\Assignment.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\Project_DA.dir
+  OBJECT_FILE_DIR = CMakeFiles\Project_DA.dir\src
+  TARGET_COMPILE_PDB = CMakeFiles\Project_DA.dir\
+  TARGET_PDB = Project_DA.pdb
+
+build CMakeFiles/Project_DA.dir/src/Parser.cpp.obj: CXX_COMPILER__Project_DA_unscanned_Debug C$:/Users/Ana$ Carolina/CLionProjects/Project_DA/src/Parser.cpp || cmake_object_order_depends_target_Project_DA
+  DEP_FILE = CMakeFiles\Project_DA.dir\src\Parser.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\Project_DA.dir
+  OBJECT_FILE_DIR = CMakeFiles\Project_DA.dir\src
+  TARGET_COMPILE_PDB = CMakeFiles\Project_DA.dir\
+  TARGET_PDB = Project_DA.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Project_DA
@@ -65,7 +81,7 @@ build CMakeFiles/Project_DA.dir/src/main.cpp.obj: CXX_COMPILER__Project_DA_unsca
 #############################################
 # Link the executable Project_DA.exe
 
-build Project_DA.exe: CXX_EXECUTABLE_LINKER__Project_DA_Debug CMakeFiles/Project_DA.dir/src/main.cpp.obj
+build Project_DA.exe: CXX_EXECUTABLE_LINKER__Project_DA_Debug CMakeFiles/Project_DA.dir/src/main.cpp.obj CMakeFiles/Project_DA.dir/src/Assignment.cpp.obj CMakeFiles/Project_DA.dir/src/Parser.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Project_DA.dir

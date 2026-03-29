@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-
 #include "Parser.h"
 #include "Assignment.h"
 
@@ -19,30 +18,22 @@ void showMenu() {
 }
 
 int main(int argc, char* argv[]) {
-
     vector<Submission> submissions;
     vector<Reviewer> reviewers;
     Parameters params;
     Control control;
 
     bool fileLoaded = false;
-    bool assignmentDone = false;
 
-    // ─── BATCH MODE ──────────────────────────────────────────────────────
-    // Usage: ./myProg -b input.csv [risk_output.csv]
     if (argc >= 3 && string(argv[1]) == "-b") {
-
         string inputFile = argv[2];
-        // 3º argumento opcional: ficheiro de output do risk analysis
-        string riskOutputFile = (argc >= 4 ? argv[3] : "risk_output.csv");
+        string riskOutputFile = (argc >= 4 ? argv[3] : "risk.csv");
 
         if (!Parser::parseCSV(inputFile, submissions, reviewers, params, control)) {
             cerr << "Error: could not read input file: " << inputFile << "\n";
             return 1;
         }
 
-        // O outputFileName do assignment vem do CSV (control.outputFileName)
-        // Se o utilizador não definiu no CSV, usa o default "output.csv"
         string assignOutputFile = control.outputFileName.empty() ? "output.csv" : control.outputFileName;
 
         if (control.generateAssignments != 0) {
@@ -54,10 +45,7 @@ int main(int argc, char* argv[]) {
         }
 
         if (control.riskAnalysis > 0) {
-            // Risk analysis corre com um ficheiro de output separado
-            Control riskCtrl = control;
-            riskCtrl.generateAssignments = 0; // não re-escrever o assignment
-            if (!Assignment::generateAssignment(submissions, reviewers, params, riskCtrl, riskOutputFile)) {
+            if (!Assignment::generateRiskAnalysis(submissions, reviewers, params, control, riskOutputFile)) {
                 cerr << "Error: risk analysis failed.\n";
                 return 1;
             }
@@ -67,11 +55,9 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    // ─── INTERACTIVE MODE ────────────────────────────────────────────────
     int option = -1;
 
     while (option != 0) {
-
         showMenu();
 
         if (!(cin >> option)) {
@@ -81,7 +67,6 @@ int main(int argc, char* argv[]) {
         }
 
         switch (option) {
-
         case 1: {
             string filename;
             cout << "Enter file path: ";
@@ -92,7 +77,6 @@ int main(int argc, char* argv[]) {
                 cout << "  Submissions: " << submissions.size() << "\n";
                 cout << "  Reviewers:   " << reviewers.size() << "\n";
                 fileLoaded = true;
-                assignmentDone = false;
             } else {
                 cerr << "Error: could not load file.\n";
             }
@@ -136,7 +120,6 @@ int main(int argc, char* argv[]) {
             cout << "Running assignment (mode " << control.generateAssignments << ")...\n";
             if (Assignment::generateAssignment(submissions, reviewers, params, control, outFile)) {
                 cout << "Done. Results saved to: " << outFile << "\n";
-                assignmentDone = true;
             } else {
                 cerr << "Error during assignment.\n";
             }
@@ -149,11 +132,9 @@ int main(int argc, char* argv[]) {
                 cout << "RiskAnalysis is set to 0 in the input file. Nothing to do.\n";
                 break;
             }
-            string riskFile = "risk_output.csv";
+            string riskFile = "risk.csv";
             cout << "Running risk analysis (K=" << control.riskAnalysis << ")...\n";
-            Control riskCtrl = control;
-            riskCtrl.generateAssignments = 0;
-            if (Assignment::generateAssignment(submissions, reviewers, params, riskCtrl, riskFile)) {
+            if (Assignment::generateRiskAnalysis(submissions, reviewers, params, control, riskFile)) {
                 cout << "Done. Risk analysis saved to: " << riskFile << "\n";
             } else {
                 cerr << "Error during risk analysis.\n";
