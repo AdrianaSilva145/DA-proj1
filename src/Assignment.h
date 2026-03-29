@@ -11,12 +11,23 @@
 
 struct Assignment {
 
-    static bool generateAssignment(const std::vector<Submission> &subs, const std::vector<Reviewer> &revs, const Parameters &params,
-                                 const Control &ctrl, const std::string &outputFile);
-
-    static std::vector<int> riskAnalysis1(const std::vector<Submission> &subs,
-                                          const std::vector<Reviewer> &revs,
-                                          const Parameters &params);
+    /**
+     * @brief Generates the review assignment using Max-Flow (Edmonds-Karp).
+     *        Also handles Risk Analysis if control.riskAnalysis > 0.
+     *        Time Complexity: O(R * V * E^2) where R = riskAnalysis value (combinations),
+     *                         V = vertices, E = edges in the flow network.
+     * @param subs       List of submissions
+     * @param revs       List of reviewers
+     * @param params     Problem parameters (min/max reviews)
+     * @param ctrl       Control parameters (mode, risk, output file)
+     * @param outputFile Output file path
+     * @return true if assignment was generated successfully
+     */
+    static bool generateAssignment(const std::vector<Submission> &subs,
+                                   const std::vector<Reviewer> &revs,
+                                   const Parameters &params,
+                                   const Control &ctrl,
+                                   const std::string &outputFile);
 };
 
 #endif //ASSIGNMENT_H

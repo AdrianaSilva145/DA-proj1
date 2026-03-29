@@ -2,280 +2,276 @@
 #include "MaxFlow.h"
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
-
-int match(const Submission &s, const Reviewer &r, int mode) {
-    if (mode==1) {
+/**
+ * @brief Determines the matching domain between a submission and a reviewer.
+ *        Time Complexity: O(1)
+ */
+static int match(const Submission &s, const Reviewer &r, int mode) {
+    if (mode == 1) {
         if (s.primaryTopic == r.primaryExpertise) return s.primaryTopic;
     }
-    else if (mode==2) {
+    else if (mode == 2) {
         if (s.primaryTopic == r.primaryExpertise) return s.primaryTopic;
-        if (s.secondaryTopic !=0 && s.secondaryTopic == r.primaryExpertise) return s.secondaryTopic;
+        if (s.secondaryTopic != -1 && s.secondaryTopic == r.primaryExpertise) return s.secondaryTopic;
     }
-    else if (mode==3) {
+    else if (mode == 3) {
         if (s.primaryTopic == r.primaryExpertise) return s.primaryTopic;
-        if (s.secondaryTopic != 0 && s.secondaryTopic == r.primaryExpertise) return s.secondaryTopic;
-        if (r.secondaryExpertise != 0 && s.primaryTopic == r.secondaryExpertise) return s.primaryTopic;
-        if (s.secondaryTopic != 0 && r.secondaryExpertise !=0 && s.secondaryTopic == r.secondaryExpertise) return s.secondaryTopic;
+        if (s.secondaryTopic != -1 && s.secondaryTopic == r.primaryExpertise) return s.secondaryTopic;
+        if (r.secondaryExpertise != -1 && s.primaryTopic == r.secondaryExpertise) return s.primaryTopic;
+        if (s.secondaryTopic != -1 && r.secondaryExpertise != -1 && s.secondaryTopic == r.secondaryExpertise) return s.secondaryTopic;
     }
     return 0;
-
 }
 
+/**
+ * @brief Resets all flows to 0. Only touches forward edges (weight > 0)
+ *        to avoid accessing deleted/dangling reverse edges.
+ *        Time Complexity: O(V + E)
+ */
+static void resetFlows(Graph<int> &g) {
+    for (auto v : g.getVertexSet()) {
+        for (auto e : v->getAdj()) {
+            if (e->getWeight() > 0) {
+                e->setFlow(0);
+                if (e->getReverse())
+                    e->getReverse()->setFlow(0);
+            }
+        }
+    }
+}
 
-struct MatchEdge {
-    int submissionIndex;
-    int reviewerIndex;
-    Edge<int>* edge;
-    MatchEdge(size_t s, int r, Edge<int>* e) : submissionIndex(s), reviewerIndex(r),edge(e) {}
-};
+/**
+ * @brief Generates the review assignment using Max-Flow (Edmonds-Karp).
+ *        Also handles Risk Analysis if control.riskAnalysis > 0.
+ *        Time Complexity: O(V*E^2) base; O(C(N,K) * V*E^2) with risk analysis.
+ */
 bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
                                     const std::vector<Reviewer>& reviewers,
                                     const Parameters& params,
                                     const Control& control,
                                     const std::string& outputFile)
 {
-    // Ordenar reviewers por ID
     std::vector<Reviewer> sortedReviewers = reviewers;
     std::sort(sortedReviewers.begin(), sortedReviewers.end(),
-              [](const Reviewer &a, const Reviewer &b) {
-                  return a.id < b.id;
-              });
+              [](const Reviewer &a, const Reviewer &b) { return a.id < b.id; });
 
     Graph<int> g;
 
-    int source = -1;
-    int sink   = -2;
+    const int SOURCE = -1;
+    const int SINK   = -2;
 
-    g.addVertex(source);
-    g.addVertex(sink);
+    g.addVertex(SOURCE);
+    g.addVertex(SINK);
 
     std::vector<int> subNode(submissions.size());
     std::vector<int> revNode(sortedReviewers.size());
 
-    // Criar nós das submissões
+    // Source -> Submission (cap = MinReviewsPerSubmission)
     for (size_t i = 0; i < submissions.size(); i++) {
         subNode[i] = submissions[i].id + 1000;
         g.addVertex(subNode[i]);
-        g.addEdge(source, subNode[i], params.MinReviewsPerSubmission);
+        g.addEdge(SOURCE, subNode[i], params.MinReviewsPerSubmission);
     }
 
-    // Criar nós dos reviewers
+    // Reviewer -> Sink (cap = MaxReviewsPerReviewer)
     for (size_t i = 0; i < sortedReviewers.size(); i++) {
         revNode[i] = sortedReviewers[i].id + 2000;
         g.addVertex(revNode[i]);
-        g.addEdge(revNode[i], sink, params.MaxReviewsPerReviewer);
+        g.addEdge(revNode[i], SINK, params.MaxReviewsPerReviewer);
     }
 
-    // Estrutura para guardar matches
     struct MatchEdge {
         int submissionIndex;
+        int reviewerIndex;
         int reviewerId;
         int matchDomain;
         Edge<int>* edge;
-
-        MatchEdge(size_t s, int r, int d, Edge<int>* e) : submissionIndex(s), reviewerId(r), matchDomain(d), edge(e) {}
+        MatchEdge(int si, int ri, int rid, int d, Edge<int>* e)
+            : submissionIndex(si), reviewerIndex(ri), reviewerId(rid), matchDomain(d), edge(e) {}
     };
 
     std::vector<MatchEdge> matchEdges;
 
-    // Criar arestas SUBMISSION → REVIEWER (ordem correta)
+    // Submission -> Reviewer (cap = 1 por par compativel)
     for (size_t s = 0; s < submissions.size(); s++) {
         for (size_t r = 0; r < sortedReviewers.size(); r++) {
-
             int mDomain = match(submissions[s], sortedReviewers[r], control.generateAssignments);
+            if (mDomain == 0) continue;
 
-            if (mDomain>0) {
+            g.addEdge(subNode[s], revNode[r], 1);
 
-                g.addEdge(subNode[s], revNode[r], 1);
-
-                // Encontrar a aresta criada
-                Vertex<int>* vs = g.getVertex(subNode[s]);
-                Edge<int>* e = nullptr;
-
-                for (auto edge : vs->getAdj()) {
-                    if (edge->getDest()->getInfo() == revNode[r]) {
-                        e = edge;
-                        break;
-                    }
-                }
-
-                if (!e) continue;
-
-                matchEdges.push_back({ s, sortedReviewers[r].id, mDomain, e });
+            Vertex<int>* vs = g.findVertex(subNode[s]);
+            Edge<int>* e = nullptr;
+            for (auto edge : vs->getAdj()) {
+                if (edge->getDest()->getInfo() == revNode[r] && edge->getWeight() == 1)
+                    e = edge;
             }
+            if (!e) continue;
+
+            matchEdges.push_back({ (int)s, (int)r, sortedReviewers[r].id, mDomain, e });
         }
     }
 
-    // MaxFlow
-    int flow = MaxFlow::edmondsKarp(g, source, sink);
+    // Correr Max-Flow
+    int flow = MaxFlow::edmondsKarp(g, SOURCE, SINK);
+    int maxPossibleFlow = (int)submissions.size() * params.MinReviewsPerSubmission;
 
-    // se o generateAssignments for 0, o flow corre na mesma mas não há output gerado
-    if (control.generateAssignments == 0 && control.riskAnalysis == 0) {
-        return false;
-    }
-
-    // Abrir ficheiro
     std::ofstream out(outputFile);
     if (!out.is_open()) return false;
 
-    // ORDENAR matches antes de imprimir
-    std::sort(matchEdges.begin(), matchEdges.end(),
-              [&](const MatchEdge &a, const MatchEdge &b) {
-                  int sa = submissions[a.submissionIndex].id;
-                  int sb = submissions[b.submissionIndex].id;
-                  if (sa != sb) return sa < sb;
-                  return a.reviewerId < b.reviewerId;
-              });
+    // ASSIGNMENT OUTPUT
+    if (control.generateAssignments != 0) {
 
-    // SUBMISSION → REVIEWER
-    out << "#SubmissionId,ReviewerId,Match\n";
-
-    int total = 0;
-    std::vector<int> count(submissions.size(), 0);
-
-    for (auto &m : matchEdges) {
-        if (m.edge->getFlow() == 1) {
-            out << submissions[m.submissionIndex].id << ", "
-                << m.reviewerId << ", "
-                << m.matchDomain << "\n";       //Corrigi aqui
-
-            count[m.submissionIndex]++;
-            total++;
-        }
-    }
-
-    // REVIEWER → SUBMISSION (ordenado)
-    out << "#ReviewerId,SubmissionId,Match\n";
-
-    std::vector<MatchEdge> reviewerOrder;
-    for (auto &m : matchEdges)
-        if (m.edge->getFlow() == 1)
-            reviewerOrder.push_back(m);
-
-    std::sort(reviewerOrder.begin(), reviewerOrder.end(),
-              [&](const MatchEdge &a, const MatchEdge &b) {
-                  if (a.reviewerId != b.reviewerId)
+        std::sort(matchEdges.begin(), matchEdges.end(),
+                  [&](const MatchEdge &a, const MatchEdge &b) {
+                      int sa = submissions[a.submissionIndex].id;
+                      int sb = submissions[b.submissionIndex].id;
+                      if (sa != sb) return sa < sb;
                       return a.reviewerId < b.reviewerId;
-                  return submissions[a.submissionIndex].id < submissions[b.submissionIndex].id;
-              });
+                  });
 
-    for (auto &m : reviewerOrder) {
-        out << m.reviewerId << ", "
-            << submissions[m.submissionIndex].id << ", "
-            << m.matchDomain << "\n";
-    }
+        out << "#SubmissionId,ReviewerId,Match\n";
 
-    // Total
-    out << "#Total: " << total << "\n";
+        std::vector<int> count(submissions.size(), 0);
+        int total = 0;
 
-    //Parte do RiskAnalysis
+        for (auto &m : matchEdges) {
+            if (m.edge->getFlow() == 1) {
+                out << submissions[m.submissionIndex].id << ", "
+                    << m.reviewerId << ", "
+                    << m.matchDomain << "\n";
+                count[m.submissionIndex]++;
+                total++;
+            }
+        }
 
-    int maxPossibleFlow = submissions.size() * params.MinReviewsPerSubmission;
+        out << "#ReviewerId,SubmissionId,Match\n";
 
-    if (total < maxPossibleFlow) {
-        out << "#SubmissionId,Domain,MissingReviews\n";
-        for (size_t i = 0; i< submissions.size(); i++) {int missing = params.MinReviewsPerSubmission - count[i];
-            if (missing > 0) {
+        std::vector<MatchEdge> reviewerOrder;
+        for (auto &m : matchEdges)
+            if (m.edge->getFlow() == 1)
+                reviewerOrder.push_back(m);
+
+        std::sort(reviewerOrder.begin(), reviewerOrder.end(),
+                  [&](const MatchEdge &a, const MatchEdge &b) {
+                      if (a.reviewerId != b.reviewerId) return a.reviewerId < b.reviewerId;
+                      return submissions[a.submissionIndex].id < submissions[b.submissionIndex].id;
+                  });
+
+        for (auto &m : reviewerOrder) {
+            out << m.reviewerId << ", "
+                << submissions[m.submissionIndex].id << ", "
+                << m.matchDomain << "\n";
+        }
+
+        out << "#Total: " << total << "\n";
+
+        // Submissoes com reviews insuficientes
+        if (flow < maxPossibleFlow) {
+            out << "#SubmissionId,Domain,MissingReviews\n";
+            for (size_t i = 0; i < submissions.size(); i++) {
+                int missing = params.MinReviewsPerSubmission - count[i];
+                if (missing > 0) {
                     out << submissions[i].id << ", "
-                    << submissions[i].primaryTopic << ", "
-                    << missing << "\n";
+                        << submissions[i].primaryTopic << ", "
+                        << missing << "\n";
                 }
             }
         }
-    else if (control.riskAnalysis >= 1) {
+    }
+
+    // RISK ANALYSIS
+    if (control.riskAnalysis >= 1) {
         int K = control.riskAnalysis;
-        auto resetFlows = [&g] {
-            for (auto v : g.getVertexSet()) {
-                for (auto e : v->getAdj()) {
-                    e->setFlow(0);
+        int N = (int)sortedReviewers.size();
+        if (K > N) K = N;
+
+        std::vector<int> criticalReviewers;
+        std::vector<std::vector<int>> criticalCombinations;
+
+        // Guardar ponteiros para as arestas reviewer->sink.
+        // Usamos setWeight(0) em vez de removeEdge() para evitar use-after-free:
+        // removeEdge faz delete na forward edge mas a reverse edge fica dangling
+        // no adj do sink, e o resetFlows acederia a memoria ja libertada.
+        std::vector<Edge<int>*> revToSinkEdges(N, nullptr);
+        for (int i = 0; i < N; i++) {
+            Vertex<int>* vr = g.findVertex(revNode[i]);
+            for (auto e : vr->getAdj()) {
+                if (e->getDest()->getInfo() == SINK) {
+                    revToSinkEdges[i] = e;
+                    break;
                 }
             }
-        };
-
-        std::vector<std::vector<int>> criticalCombinations;
-        int N = sortedReviewers.size();
-
-        if (K>N) K = N;     //apenas prevencao: se pedirem para falhar mais reviewers do que aqueles que existem
+        }
 
         std::vector<bool> selector(N, false);
-        std::fill(selector.end() - K, selector.end(), true);    //gerar combinacoes
+        std::fill(selector.end() - K, selector.end(), true);
 
         do {
-            std::vector<int> droppedRev;
-            std::vector<int> droppedNodes;
+            std::vector<int> droppedIds;
 
             for (int i = 0; i < N; i++) {
                 if (selector[i]) {
-                    droppedRev.push_back(sortedReviewers[i].id);
-                    droppedNodes.push_back(revNode[i]);
-                    g.removeEdge(revNode[i], sink);
+                    droppedIds.push_back(sortedReviewers[i].id);
+                    if (revToSinkEdges[i])
+                        revToSinkEdges[i]->setWeight(0);
                 }
             }
 
-            resetFlows();
-            int newFlow = MaxFlow::edmondsKarp(g, source, sink);
-            if (newFlow < maxPossibleFlow) {        //se o desaparecimento comprometeu o fluxo
-                criticalCombinations.push_back(droppedRev);
+            resetFlows(g);
+            int newFlow = MaxFlow::edmondsKarp(g, SOURCE, SINK);
+
+            if (newFlow < maxPossibleFlow) {
+                if (K == 1)
+                    criticalReviewers.push_back(droppedIds[0]);
+                else
+                    criticalCombinations.push_back(droppedIds);
             }
 
-            for (int rNode : droppedNodes) {
-                g.addEdge(rNode,sink, params.MaxReviewsPerReviewer);
+            // Restaurar capacidades
+            for (int i = 0; i < N; i++) {
+                if (selector[i] && revToSinkEdges[i])
+                    revToSinkEdges[i]->setWeight(params.MaxReviewsPerReviewer);
             }
+
         } while (std::next_permutation(selector.begin(), selector.end()));
 
         out << "#Risk Analysis: " << K << "\n";
 
-        std::sort(criticalCombinations.begin(), criticalCombinations.end());
-
-        if (!criticalCombinations.empty()) {
-
-            if (K==1) {
-                for (size_t i = 0; i < criticalCombinations.size(); i++) {
-                    out << criticalCombinations[i][0] << (i == criticalCombinations.size() - 1 ? "" : ", ");
+        if (K == 1) {
+            std::sort(criticalReviewers.begin(), criticalReviewers.end());
+            for (size_t i = 0; i < criticalReviewers.size(); i++) {
+                out << criticalReviewers[i];
+                if (i + 1 < criticalReviewers.size()) out << ", ";
+            }
+            if (!criticalReviewers.empty()) out << "\n";
+        } else {
+            std::sort(criticalCombinations.begin(), criticalCombinations.end());
+            for (const auto &c : criticalCombinations) {
+                for (size_t i = 0; i < c.size(); i++) {
+                    out << c[i];
+                    if (i + 1 < c.size()) out << ", ";
                 }
                 out << "\n";
             }
-            else {
-                for (const auto &c : criticalCombinations) {
-                    for (size_t i = 0; i < c.size(); i++) {
-                        out << c[i] << (i == c.size() - 1 ? "" : ", ");
-                    }
-                    out << "\n";
-                }
-            }
         }
-
-
     }
+
     out.flush();
     out.close();
-    return true;
-}
 
-std::vector<int> Assignment::riskAnalysis1(const std::vector<Submission> &subs,
-                                           const std::vector<Reviewer> &revs,
-                                           const Parameters &params)
-{
-    std::vector<int> riskySubmissions;
-
-    // Exemplo simples: marcar submissões sem reviewers compatíveis
-    for (const auto &s : subs) {
-        bool hasMatch = false;
-
-        for (const auto &r : revs) {
-            if (s.primaryTopic == r.primaryExpertise ||
-                s.primaryTopic == r.secondaryExpertise ||
-                s.secondaryTopic == r.primaryExpertise ||
-                s.secondaryTopic == r.secondaryExpertise) {
-                hasMatch = true;
-                break;
-                }
-        }
-
-        if (!hasMatch)
-            riskySubmissions.push_back(s.id);
+    // Libertar memoria do grafo de forma segura:
+    // Primeiro apagar todas as arestas de cada vertice sem tentar aceder
+    // ao incoming do destino (que pode ja estar deletado se usarmos clear())
+    for (auto v : g.getVertexSet()) {
+        for (auto e : v->getAdj())
+            delete e;
     }
+    // Agora apagar os vertices (adj e incoming sao apenas ponteiros, ja deletados)
+    for (auto v : g.getVertexSet())
+        delete v;
 
-    return riskySubmissions;
+    return true;
 }
