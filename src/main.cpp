@@ -5,18 +5,41 @@
 
 using namespace std;
 
+// Apresenta o menu principal do programa no modo interativo.
 void showMenu() {
-    cout << "\n===== MAIN MENU =====\n";
-    cout << "1. Load input file\n";
-    cout << "2. Show submissions\n";
-    cout << "3. Show reviewers\n";
-    cout << "4. Show parameters\n";
-    cout << "5. Run assignment\n";
-    cout << "6. Run risk analysis\n";
-    cout << "0. Exit\n";
-    cout << "Option: ";
+    cout << "\n===== MENU PRINCIPAL =====\n";
+    cout << "1. Carregar ficheiro de entrada\n";
+    cout << "2. Mostrar submissoes\n";
+    cout << "3. Mostrar revisores\n";
+    cout << "4. Mostrar parametros\n";
+    cout << "5. Gerar atribuicao\n";
+    cout << "6. Correr analise de risco\n";
+    cout << "0. Sair\n";
+    cout << "Opcao: ";
 }
 
+/**
+ * @brief Ponto de entrada principal do programa.
+ *
+ * Suporta dois modos de execucao:
+ *
+ * **Modo batch** (linha de comandos):
+ * @code
+ * ./myProg -b input.csv [risk_output.csv]
+ * @endcode
+ * - O 2o argumento e o ficheiro CSV de entrada.
+ * - O 3o argumento (opcional) e o ficheiro de saida da analise de risco.
+ * - O ficheiro de saida da atribuicao e determinado pelo campo OutputFileName do CSV.
+ * - Mensagens de erro sao enviadas para stderr.
+ *
+ * **Modo interativo** (sem argumentos):
+ * Apresenta um menu que permite carregar ficheiros, visualizar dados e
+ * executar as funcionalidades implementadas.
+ *
+ * @param argc Numero de argumentos da linha de comandos.
+ * @param argv Array de argumentos da linha de comandos.
+ * @return 0 se bem-sucedido, 1 em caso de erro.
+ */
 int main(int argc, char* argv[]) {
     vector<Submission> submissions;
     vector<Reviewer> reviewers;
@@ -25,12 +48,13 @@ int main(int argc, char* argv[]) {
 
     bool fileLoaded = false;
 
+    // --- Modo Batch ---
     if (argc >= 3 && string(argv[1]) == "-b") {
         string inputFile = argv[2];
         string riskOutputFile = (argc >= 4 ? argv[3] : "risk.csv");
 
         if (!Parser::parseCSV(inputFile, submissions, reviewers, params, control)) {
-            cerr << "Error: could not read input file: " << inputFile << "\n";
+            cerr << "Erro: nao foi possivel ler o ficheiro de entrada: " << inputFile << "\n";
             return 1;
         }
 
@@ -38,23 +62,24 @@ int main(int argc, char* argv[]) {
 
         if (control.generateAssignments != 0) {
             if (!Assignment::generateAssignment(submissions, reviewers, params, control, assignOutputFile)) {
-                cerr << "Error: assignment generation failed.\n";
+                cerr << "Erro: falha na geracao da atribuicao.\n";
                 return 1;
             }
-            cout << "Assignment written to: " << assignOutputFile << "\n";
+            cout << "Atribuicao escrita em: " << assignOutputFile << "\n";
         }
 
         if (control.riskAnalysis > 0) {
             if (!Assignment::generateRiskAnalysis(submissions, reviewers, params, control, riskOutputFile)) {
-                cerr << "Error: risk analysis failed.\n";
+                cerr << "Erro: falha na analise de risco.\n";
                 return 1;
             }
-            cout << "Risk analysis written to: " << riskOutputFile << "\n";
+            cout << "Analise de risco escrita em: " << riskOutputFile << "\n";
         }
 
         return 0;
     }
 
+    // --- Modo Interativo ---
     int option = -1;
 
     while (option != 0) {
@@ -67,45 +92,46 @@ int main(int argc, char* argv[]) {
         }
 
         switch (option) {
+
         case 1: {
             string filename;
-            cout << "Enter file path: ";
+            cout << "Caminho do ficheiro: ";
             cin >> filename;
 
             if (Parser::parseCSV(filename, submissions, reviewers, params, control)) {
-                cout << "File loaded successfully.\n";
-                cout << "  Submissions: " << submissions.size() << "\n";
-                cout << "  Reviewers:   " << reviewers.size() << "\n";
+                cout << "Ficheiro carregado com sucesso.\n";
+                cout << "  Submissoes: " << submissions.size() << "\n";
+                cout << "  Revisores:  " << reviewers.size() << "\n";
                 fileLoaded = true;
             } else {
-                cerr << "Error: could not load file.\n";
+                cerr << "Erro: nao foi possivel carregar o ficheiro.\n";
             }
             break;
         }
 
         case 2: {
-            if (!fileLoaded) { cout << "Please load a file first.\n"; break; }
-            cout << "\n--- Submissions ---\n";
+            if (!fileLoaded) { cout << "Carregue um ficheiro primeiro.\n"; break; }
+            cout << "\n--- Submissoes ---\n";
             for (const auto &s : submissions)
                 cout << "  [" << s.id << "] " << s.title
-                     << " | Primary: " << s.primaryTopic
-                     << " | Secondary: " << (s.secondaryTopic == -1 ? 0 : s.secondaryTopic) << "\n";
+                     << " | Primario: " << s.primaryTopic
+                     << " | Secundario: " << (s.secondaryTopic == -1 ? 0 : s.secondaryTopic) << "\n";
             break;
         }
 
         case 3: {
-            if (!fileLoaded) { cout << "Please load a file first.\n"; break; }
-            cout << "\n--- Reviewers ---\n";
+            if (!fileLoaded) { cout << "Carregue um ficheiro primeiro.\n"; break; }
+            cout << "\n--- Revisores ---\n";
             for (const auto &r : reviewers)
                 cout << "  [" << r.id << "] " << r.name
-                     << " | Primary: " << r.primaryExpertise
-                     << " | Secondary: " << (r.secondaryExpertise == -1 ? 0 : r.secondaryExpertise) << "\n";
+                     << " | Primario: " << r.primaryExpertise
+                     << " | Secundario: " << (r.secondaryExpertise == -1 ? 0 : r.secondaryExpertise) << "\n";
             break;
         }
 
         case 4: {
-            if (!fileLoaded) { cout << "Please load a file first.\n"; break; }
-            cout << "\n--- Parameters ---\n";
+            if (!fileLoaded) { cout << "Carregue um ficheiro primeiro.\n"; break; }
+            cout << "\n--- Parametros ---\n";
             cout << "  MinReviewsPerSubmission: " << params.MinReviewsPerSubmission << "\n";
             cout << "  MaxReviewsPerReviewer:   " << params.MaxReviewsPerReviewer << "\n";
             cout << "  GenerateAssignments:     " << control.generateAssignments << "\n";
@@ -115,39 +141,39 @@ int main(int argc, char* argv[]) {
         }
 
         case 5: {
-            if (!fileLoaded) { cout << "Please load a file first.\n"; break; }
+            if (!fileLoaded) { cout << "Carregue um ficheiro primeiro.\n"; break; }
             string outFile = control.outputFileName.empty() ? "output.csv" : control.outputFileName;
-            cout << "Running assignment (mode " << control.generateAssignments << ")...\n";
+            cout << "A gerar atribuicao (modo " << control.generateAssignments << ")...\n";
             if (Assignment::generateAssignment(submissions, reviewers, params, control, outFile)) {
-                cout << "Done. Results saved to: " << outFile << "\n";
+                cout << "Concluido. Resultados guardados em: " << outFile << "\n";
             } else {
-                cerr << "Error during assignment.\n";
+                cerr << "Erro durante a geracao da atribuicao.\n";
             }
             break;
         }
 
         case 6: {
-            if (!fileLoaded) { cout << "Please load a file first.\n"; break; }
+            if (!fileLoaded) { cout << "Carregue um ficheiro primeiro.\n"; break; }
             if (control.riskAnalysis == 0) {
-                cout << "RiskAnalysis is set to 0 in the input file. Nothing to do.\n";
+                cout << "RiskAnalysis esta definido a 0 no ficheiro. Nada a fazer.\n";
                 break;
             }
             string riskFile = "risk.csv";
-            cout << "Running risk analysis (K=" << control.riskAnalysis << ")...\n";
+            cout << "A correr analise de risco (K=" << control.riskAnalysis << ")...\n";
             if (Assignment::generateRiskAnalysis(submissions, reviewers, params, control, riskFile)) {
-                cout << "Done. Risk analysis saved to: " << riskFile << "\n";
+                cout << "Concluido. Analise de risco guardada em: " << riskFile << "\n";
             } else {
-                cerr << "Error during risk analysis.\n";
+                cerr << "Erro durante a analise de risco.\n";
             }
             break;
         }
 
         case 0:
-            cout << "Exiting...\n";
+            cout << "A sair...\n";
             break;
 
         default:
-            cout << "Invalid option.\n";
+            cout << "Opcao invalida.\n";
         }
     }
 

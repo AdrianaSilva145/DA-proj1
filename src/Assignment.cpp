@@ -3,6 +3,10 @@
 #include <vector>
 #include <algorithm>
 
+// Determina o dominio de correspondencia entre uma submissao e um revisor.
+// Modo 1: so dominios primarios. Modo 2: secundario da submissao. Modo 3: todos.
+// Retorna o numero do dominio correspondente (>0), ou 0 se nao houver correspondencia.
+// Complexidade: O(1)
 static int match(const Submission &s, const Reviewer &r, int mode) {
     if (mode == 1) {
         if (s.primaryTopic == r.primaryExpertise) return s.primaryTopic;
@@ -20,6 +24,8 @@ static int match(const Submission &s, const Reviewer &r, int mode) {
     return 0;
 }
 
+// Repoe todos os fluxos do grafo a zero (apenas arestas forward com peso > 0).
+// Complexidade: O(V + E)
 static void resetFlows(Graph<int> &g) {
     for (auto v : g.getVertexSet()) {
         for (auto e : v->getAdj()) {
@@ -32,68 +38,40 @@ static void resetFlows(Graph<int> &g) {
     }
 }
 
+/**
+ * @brief Estrutura interna que representa uma aresta de correspondencia submissao-revisor.
+ *
+ * Guarda os indices e IDs necessarios para reconstruir a atribuicao apos correr
+ * o Max-Flow, juntamente com um ponteiro para a aresta de fluxo real no grafo.
+ */
 struct MatchEdge {
-    int submissionIndex;
-    int reviewerIndex;
-    int reviewerId;
-    int matchDomain;
-    Edge<int>* edge;
+    int submissionIndex; ///< Indice no vector de submissoes.
+    int reviewerIndex;   ///< Indice no vector de revisores ordenados.
+    int reviewerId;      ///< ID real do revisor (dos dados de entrada).
+    int matchDomain;     ///< Numero do dominio correspondente.
+    Edge<int>* edge;     ///< Ponteiro para a aresta forward no grafo de fluxo.
+
+    /**
+     * @brief Constroi um MatchEdge com todos os campos.
+     * @param si  Indice da submissao.
+     * @param ri  Indice do revisor.
+     * @param rid ID do revisor.
+     * @param d   Dominio correspondente.
+     * @param e   Ponteiro para a aresta de fluxo.
+     */
     MatchEdge(int si, int ri, int rid, int d, Edge<int>* e)
         : submissionIndex(si), reviewerIndex(ri), reviewerId(rid), matchDomain(d), edge(e) {}
 };
 
-static void buildGraph(const std::vector<Submission>& submissions,
-                       const std::vector<Reviewer>& reviewers,
-                       const Parameters& params,
-                       const Control& control,
-                       Graph<int>& g,
-                       std::vector<int>& subNode,
-                       std::vector<int>& revNode,
-                       std::vector<MatchEdge>& matchEdges)
-{
-    const int SOURCE = -1;
-    const int SINK = -2;
-
-    g.addVertex(SOURCE);
-    g.addVertex(SINK);
-
-    std::vector<Reviewer> sortedReviewers = reviewers;
-    std::sort(sortedReviewers.begin(), sortedReviewers.end(),
-              [](const Reviewer &a, const Reviewer &b) { return a.id < b.id; });
-
-    subNode.resize(submissions.size());
-    revNode.resize(sortedReviewers.size());
-
-    for (size_t i = 0; i < submissions.size(); i++) {
-        subNode[i] = submissions[i].id + 1000;
-        g.addVertex(subNode[i]);
-        g.addEdge(SOURCE, subNode[i], params.MinReviewsPerSubmission);
-    }
-
-    for (size_t i = 0; i < sortedReviewers.size(); i++) {
-        revNode[i] = sortedReviewers[i].id + 2000;
-        g.addVertex(revNode[i]);
-        g.addEdge(revNode[i], SINK, params.MaxReviewsPerReviewer);
-    }
-
-    for (size_t s = 0; s < submissions.size(); s++) {
-        for (size_t r = 0; r < sortedReviewers.size(); r++) {
-            int mDomain = match(submissions[s], sortedReviewers[r], control.generateAssignments);
-            if (mDomain == 0) continue;
-
-            g.addEdge(subNode[s], revNode[r], 1);
-
-            Vertex<int>* vs = g.findVertex(subNode[s]);
-            Edge<int>* e = nullptr;
-            for (auto edge : vs->getAdj()) {
-                if (edge->getDest()->getInfo() == revNode[r] && edge->getWeight() == 1)
-                    e = edge;
-            }
-            if (!e) continue;
-
-            matchEdges.push_back({(int)s, (int)r, sortedReviewers[r].id, mDomain, e});
-        }
-    }
+// Liberta toda a memoria alocada para o grafo de fluxo de forma segura.
+// Efectua a libertacao em duas passagens para evitar use-after-free.
+// Complexidade: O(V + E)
+static void freeGraph(Graph<int> &g) {
+    for (auto v : g.getVertexSet())
+        for (auto e : v->getAdj())
+            delete e;
+    for (auto v : g.getVertexSet())
+        delete v;
 }
 
 bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
@@ -117,18 +95,21 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     std::vector<int> revNode(sortedReviewers.size());
     std::vector<MatchEdge> matchEdges;
 
+    // Source -> nos de submissao (capacidade = MinReviewsPerSubmission)
     for (size_t i = 0; i < submissions.size(); i++) {
         subNode[i] = submissions[i].id + 1000;
         g.addVertex(subNode[i]);
         g.addEdge(SOURCE, subNode[i], params.MinReviewsPerSubmission);
     }
 
+    // Nos de revisor -> Sink (capacidade = MaxReviewsPerReviewer)
     for (size_t i = 0; i < sortedReviewers.size(); i++) {
         revNode[i] = sortedReviewers[i].id + 2000;
         g.addVertex(revNode[i]);
         g.addEdge(revNode[i], SINK, params.MaxReviewsPerReviewer);
     }
 
+    // Arestas submissao -> revisor (capacidade 1) para pares de dominios compativeis
     for (size_t s = 0; s < submissions.size(); s++) {
         for (size_t r = 0; r < sortedReviewers.size(); r++) {
             int mDomain = match(submissions[s], sortedReviewers[r], control.generateAssignments);
@@ -152,9 +133,10 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     int maxPossibleFlow = (int)submissions.size() * params.MinReviewsPerSubmission;
 
     std::ofstream out(outputFile, std::ios::out | std::ios::trunc);
-    if (!out.is_open()) return false;
+    if (!out.is_open()) { freeGraph(g); return false; }
 
     if (control.generateAssignments != 0) {
+        // Ordenar por ID de submissao, depois por ID de revisor
         std::sort(matchEdges.begin(), matchEdges.end(),
                   [&](const MatchEdge &a, const MatchEdge &b) {
                       int sa = submissions[a.submissionIndex].id;
@@ -178,6 +160,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
             }
         }
 
+        // Vista dual: ordenada por ID de revisor
         out << "#ReviewerId,SubmissionId,Match\n";
 
         std::vector<MatchEdge> reviewerOrder;
@@ -199,6 +182,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
         out << "#Total: " << total << "\n";
 
+        // Reportar submissoes com revisoes insuficientes
         if (flow < maxPossibleFlow) {
             out << "#SubmissionId,Domain,MissingReviews\n";
             for (size_t i = 0; i < submissions.size(); i++) {
@@ -212,6 +196,11 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
         }
     }
 
+    // --- Analise de Risco (T2.2: K=1, T2.3: K>1) ---
+    // Para cada combinacao de K revisores, a aresta revisor->Sink e temporariamente
+    // colocada com capacidade 0. O Max-Flow e re-executado e, se o fluxo for inferior
+    // ao necessario, essa combinacao e considerada critica.
+    // Complexidade K=1: O(N*V*E^2). K>1: O(C(N,K)*V*E^2).
     if (control.riskAnalysis > 0) {
         int K = control.riskAnalysis;
         int N = (int)sortedReviewers.size();
@@ -236,7 +225,6 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
         do {
             std::vector<int> droppedIds;
-
             for (int i = 0; i < N; i++) {
                 if (selector[i]) {
                     droppedIds.push_back(sortedReviewers[i].id);
@@ -284,14 +272,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     }
 
     out.close();
-
-    for (auto v : g.getVertexSet()) {
-        for (auto e : v->getAdj())
-            delete e;
-    }
-    for (auto v : g.getVertexSet())
-        delete v;
-
+    freeGraph(g);
     return true;
 }
 
@@ -349,8 +330,10 @@ bool Assignment::generateRiskAnalysis(const std::vector<Submission>& submissions
 
     int maxPossibleFlow = (int)submissions.size() * params.MinReviewsPerSubmission;
 
+    MaxFlow::edmondsKarp(g, SOURCE, SINK);
+
     std::ofstream out(riskFile, std::ios::out | std::ios::trunc);
-    if (!out.is_open()) return false;
+    if (!out.is_open()) { freeGraph(g); return false; }
 
     int K = control.riskAnalysis;
     int N = (int)sortedReviewers.size();
@@ -422,13 +405,6 @@ bool Assignment::generateRiskAnalysis(const std::vector<Submission>& submissions
     }
 
     out.close();
-
-    for (auto v : g.getVertexSet()) {
-        for (auto e : v->getAdj())
-            delete e;
-    }
-    for (auto v : g.getVertexSet())
-        delete v;
-
+    freeGraph(g);
     return true;
 }

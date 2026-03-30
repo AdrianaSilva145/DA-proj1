@@ -10,6 +10,7 @@
 #include <cctype>
 #include <algorithm>
 
+// Estados possiveis do parser durante a leitura do ficheiro CSV.
 enum ParseState {
     NONE,
     SUBMISSIONS,
@@ -18,22 +19,15 @@ enum ParseState {
     CONTROL
 };
 
-// Função auxiliar simples para limpar espaços e aspas
+// Remove espacos em branco no inicio/fim e aspas de uma string. Complexidade: O(n)
 static std::string clean(const std::string &s) {
     std::string out = s;
-
-    // remover espaços no início
     while (!out.empty() && std::isspace(out.front()))
         out.erase(0, 1);
-
-    // remover espaços no fim
     while (!out.empty() && std::isspace(out.back()))
         out.pop_back();
-
-    // remover aspas
     if (out.size() >= 2 && out.front() == '"' && out.back() == '"')
         out = out.substr(1, out.size() - 2);
-
     return out;
 }
 
@@ -45,7 +39,7 @@ bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& subm
 
     std::ifstream file(filepath);
     if (!file.is_open()) {
-        std::cerr << "Error opening file " << filepath << std::endl;
+        std::cerr << "Erro ao abrir o ficheiro " << filepath << std::endl;
         return false;
     }
 
@@ -54,16 +48,13 @@ bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& subm
 
     while (std::getline(file, line)) {
 
-        // Identificar secções
         if (line.find("#Submissions") != std::string::npos) { state = SUBMISSIONS; continue; }
         if (line.find("#Reviewers") != std::string::npos)   { state = REVIEWERS; continue; }
         if (line.find("#Parameters") != std::string::npos)  { state = PARAMETERS; continue; }
         if (line.find("#Control") != std::string::npos)     { state = CONTROL; continue; }
 
-        // Ignorar linhas vazias ou comentários
         if (line.empty() || line[0] == '#') continue;
 
-        // Remover comentários no fim da linha
         size_t pos = line.find('#');
         if (pos != std::string::npos)
             line = line.substr(0, pos);
@@ -73,9 +64,6 @@ bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& subm
 
         switch (state) {
 
-        // ============================
-        // SUBMISSIONS
-        // ============================
         case SUBMISSIONS: {
             int id = -1, primary = -1, secondary = -1;
             std::string title, authors, email;
@@ -101,9 +89,6 @@ bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& subm
             break;
         }
 
-        // ============================
-        // REVIEWERS
-        // ============================
         case REVIEWERS: {
             int id = -1, primary = -1, secondary = -1;
             std::string name, email;
@@ -128,14 +113,10 @@ bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& subm
             break;
         }
 
-        // ============================
-        // PARAMETERS
-        // ============================
         case PARAMETERS: {
             std::string key, value;
             std::getline(ss, key, ',');
             std::getline(ss, value, ',');
-
             key = clean(key);
             value = clean(value);
 
@@ -151,18 +132,13 @@ bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& subm
                 params.primarySubmissionDomain = value.empty() ? -1 : std::stoi(value);
             else if (key == "SecondarySubmissionDomain")
                 params.secondarySubmissionDomain = value.empty() ? -1 : std::stoi(value);
-
             break;
         }
 
-        // ============================
-        // CONTROL
-        // ============================
         case CONTROL: {
             std::string key, value;
             std::getline(ss, key, ',');
             std::getline(ss, value, ',');
-
             key = clean(key);
             value = clean(value);
 

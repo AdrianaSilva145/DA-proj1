@@ -1,0 +1,9 @@
+<map id="MatchEdge" name="MatchEdge">
+<area shape="rect" id="Node000001" title="Estrutura interna que representa uma aresta de correspondencia submissao&#45;revisor." alt="" coords="5,108,100,133"/>
+<area shape="rect" id="Node000002" href="$classEdge.html" title=" " alt="" coords="70,5,171,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="86,40,70,56,59,83,55,108,50,107,54,81,65,53,82,36"/>
+<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="186,8,194,11,198,18,190,27,172,30,171,25,187,22,193,18,191,15,184,13"/>
+<area shape="rect" id="Node000003" href="$classVertex.html" title=" " alt="" coords="127,108,237,133"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="116,44,114,64,119,83,131,96,147,106,144,110,128,100,114,85,108,64,110,44"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="172,96,153,56,132,33,136,29,158,53,177,94"/>
+</map>

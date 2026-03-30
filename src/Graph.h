@@ -8,19 +8,27 @@
 #include <algorithm>
 #include "MutablePriorityQueue.h"
 
-
 template <class T>
 class Edge;
 
 #define INF std::numeric_limits<double>::max()
 
-/************************* Vertex  **************************/
+/************************* Vertex **************************/
 
+/**
+ * @brief Representa um vertice num grafo generico.
+ *
+ * Contem a informacao do no, a lista de arestas de saida (adj) e de entrada
+ * (incoming), bem como campos auxiliares usados por varios algoritmos de grafos
+ * (BFS, DFS, Dijkstra, SCC, Max-Flow, etc.).
+ *
+ * @tparam T Tipo do identificador do vertice.
+ */
 template <class T>
 class Vertex {
 public:
     Vertex(T in);
-    bool operator<(Vertex<T> & vertex) const; // // required by MutablePriorityQueue
+    bool operator<(Vertex<T> & vertex) const;
 
     T getInfo() const;
     std::vector<Edge<T> *> getAdj() const;
@@ -49,26 +57,35 @@ public:
 
     friend class MutablePriorityQueue<Vertex>;
 protected:
-    T info;                // info node
-    std::vector<Edge<T> *> adj;  // outgoing edges
+    T info;                          ///< Valor/identificador do vertice.
+    std::vector<Edge<T> *> adj;      ///< Lista de arestas de saida.
 
-    // auxiliary fields
-    bool visited = false; // used by DFS, BFS, Prim ...
-    bool processing = false; // used by isDAG (in addition to the visited attribute)
-    int low = -1, num = -1; // used by SCC Tarjan
-    unsigned int indegree; // used by topsort
-    double dist = 0;
-    Edge<T> *path = nullptr;
+    bool visited = false;            ///< Auxiliar para DFS/BFS.
+    bool processing = false;         ///< Auxiliar para detecao de ciclos.
+    int low = -1, num = -1;          ///< Auxiliar para SCC (Tarjan).
+    unsigned int indegree;           ///< Grau de entrada (para ordenacao topologica).
+    double dist = 0;                 ///< Distancia acumulada (para Dijkstra/Prim).
+    Edge<T> *path = nullptr;         ///< Aresta do caminho (para reconstrucao).
 
-    std::vector<Edge<T> *> incoming; // incoming edges
-
-    int queueIndex = 0; 		// required by MutablePriorityQueue and UFDS
+    std::vector<Edge<T> *> incoming; ///< Lista de arestas de entrada.
+    int queueIndex = 0;              ///< Indice na MutablePriorityQueue.
 
     void deleteEdge(Edge<T> *edge);
 };
 
-/********************** Edge  ****************************/
+/********************** Edge ****************************/
 
+/**
+ * @brief Representa uma aresta num grafo generico.
+ *
+ * Contem os vertices de origem e destino, o peso/capacidade da aresta, e campos
+ * auxiliares para algoritmos de fluxo (flow, reverse) e selecao (selected).
+ *
+ * Para redes de fluxo (Max-Flow), cada aresta forward tem uma aresta residual
+ * associada via o ponteiro reverse, criada automaticamente por Graph::addEdge().
+ *
+ * @tparam T Tipo do identificador dos vertices.
+ */
 template <class T>
 class Edge {
 public:
@@ -86,41 +103,39 @@ public:
     void setFlow(double flow);
     void setWeight(double w);
 protected:
-    Vertex<T> * dest; // destination vertex
-    double weight; // edge weight, can also be used for capacity
+    Vertex<T> * dest;        ///< Vertice de destino.
+    double weight;           ///< Peso ou capacidade da aresta.
 
-    // auxiliary fields
-    bool selected = false;
+    bool selected = false;   ///< Auxiliar para algoritmos de selecao.
 
-    // used for bidirectional edges
-    Vertex<T> *orig;
-    Edge<T> *reverse = nullptr;
+    Vertex<T> *orig;         ///< Vertice de origem.
+    Edge<T> *reverse = nullptr; ///< Aresta residual (para Max-Flow).
 
-    double flow; // for flow-related problems
+    double flow;             ///< Fluxo atual na aresta (para Max-Flow).
 };
 
-/********************** Graph  ****************************/
+/********************** Graph ****************************/
 
+/**
+ * @brief Representa um grafo generico com lista de adjacencia.
+ *
+ * Suporta grafos dirigidos e nao-dirigidos. Inclui metodos para adicionar/remover
+ * vertices e arestas, e campos auxiliares para algoritmos como Floyd-Warshall.
+ *
+ * Para redes de fluxo, o metodo addEdge() cria automaticamente a aresta forward
+ * e a correspondente aresta residual (reverse com capacidade 0), ligando-as
+ * pelo ponteiro reverse.
+ *
+ * @tparam T Tipo do identificador dos vertices.
+ */
 template <class T>
 class Graph {
 public:
     ~Graph();
-    /*
-    * Auxiliary function to find a vertex with a given the content.
-    */
+
     Vertex<T> *findVertex(const T &in) const;
-    /*
-     *  Adds a vertex with a given content or info (in) to a graph (this).
-     *  Returns true if successful, and false if a vertex with that content already exists.
-     */
     bool addVertex(const T &in);
     bool removeVertex(const T &in);
-
-    /*
-     * Adds an edge to a graph (this), given the contents of the source and
-     * destination vertices and the edge weight (w).
-     * Returns true if successful, and false if the source or destination vertex does not exist.
-     */
     bool addEdge(const T &sourc, const T &dest, double w);
     bool removeEdge(const T &source, const T &dest);
     bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
@@ -128,6 +143,12 @@ public:
     void clear();
 
     int getNumVertex() const;
+
+    /**
+     * @brief Retorna o vertice com o identificador dado, ou nullptr se nao existir.
+     * @param id Identificador do vertice a procurar.
+     * @return Ponteiro para o vertice, ou nullptr.
+     */
     Vertex<T>* getVertex(const T &id) {
         for (auto v : getVertexSet()) {
             if (v->getInfo() == id)
@@ -135,37 +156,26 @@ public:
         }
         return nullptr;
     }
+
     std::vector<Vertex<T> *> getVertexSet() const;
 
-
 protected:
-    std::vector<Vertex<T> *> vertexSet;    // vertex set
+    std::vector<Vertex<T> *> vertexSet; ///< Conjunto de vertices do grafo.
 
-    double ** distMatrix = nullptr;   // dist matrix for Floyd-Warshall
-    int **pathMatrix = nullptr;   // path matrix for Floyd-Warshall
+    double ** distMatrix = nullptr; ///< Matriz de distancias (Floyd-Warshall).
+    int **pathMatrix = nullptr;     ///< Matriz de caminhos (Floyd-Warshall).
 
-    /*
-     * Finds the index of the vertex with a given content.
-     */
     int findVertexIdx(const T &in) const;
-    /**
-    * Auxiliary function to set the "path" field to make a spanning tree.
-    */
-
 };
 
 void deleteMatrix(int **m, int n);
 void deleteMatrix(double **m, int n);
 
-
 /************************* Vertex  **************************/
 
 template <class T>
 Vertex<T>::Vertex(T in): info(in) {}
-/*
- * Auxiliary function to add an outgoing edge to a vertex (this),
- * with a given destination vertex (d) and edge weight (w).
- */
+
 template <class T>
 Edge<T> * Vertex<T>::addEdge(Vertex<T> *d, double w) {
     auto newEdge = new Edge<T>(this, d, w);
@@ -174,11 +184,6 @@ Edge<T> * Vertex<T>::addEdge(Vertex<T> *d, double w) {
     return newEdge;
 }
 
-/*
- * Auxiliary function to remove an outgoing edge (with a given destination (d))
- * from a vertex (this).
- * Returns true if successful, and false if such edge does not exist.
- */
 template <class T>
 bool Vertex<T>::removeEdge(T in) {
     bool removedEdge = false;
@@ -189,7 +194,7 @@ bool Vertex<T>::removeEdge(T in) {
         if (dest->getInfo() == in) {
             it = adj.erase(it);
             deleteEdge(edge);
-            removedEdge = true; // allows for multiple edges to connect the same pair of vertices (multigraph)
+            removedEdge = true;
         }
         else {
             it++;
@@ -198,10 +203,6 @@ bool Vertex<T>::removeEdge(T in) {
     return removedEdge;
 }
 
-
-/*
- * Auxiliary function to remove an outgoing edge of a vertex.
- */
 template <class T>
 void Vertex<T>::removeOutgoingEdges() {
     auto it = adj.begin();
@@ -218,99 +219,62 @@ bool Vertex<T>::operator<(Vertex<T> & vertex) const {
 }
 
 template <class T>
-T Vertex<T>::getInfo() const {
-    return this->info;
-}
+T Vertex<T>::getInfo() const { return this->info; }
 
 template <class T>
-int Vertex<T>::getLow() const {
-    return this->low;
-}
+int Vertex<T>::getLow() const { return this->low; }
 
 template <class T>
-void Vertex<T>::setLow(int value) {
-    this->low = value;
-}
+void Vertex<T>::setLow(int value) { this->low = value; }
 
 template <class T>
-int Vertex<T>::getNum() const {
-    return this->num;
-}
+int Vertex<T>::getNum() const { return this->num; }
 
 template <class T>
-void Vertex<T>::setNum(int value) {
-    this->num = value;
-}
+void Vertex<T>::setNum(int value) { this->num = value; }
 
 template <class T>
- std::vector<Edge<T>*> Vertex<T>::getAdj() const {
-    return this->adj;
-}
+std::vector<Edge<T>*> Vertex<T>::getAdj() const { return this->adj; }
 
 template <class T>
-bool Vertex<T>::isVisited() const {
-    return this->visited;
-}
+bool Vertex<T>::isVisited() const { return this->visited; }
 
 template <class T>
-bool Vertex<T>::isProcessing() const {
-    return this->processing;
-}
+bool Vertex<T>::isProcessing() const { return this->processing; }
 
 template <class T>
-unsigned int Vertex<T>::getIndegree() const {
-    return this->indegree;
-}
+unsigned int Vertex<T>::getIndegree() const { return this->indegree; }
 
 template <class T>
-double Vertex<T>::getDist() const {
-    return this->dist;
-}
+double Vertex<T>::getDist() const { return this->dist; }
 
 template <class T>
-Edge<T> *Vertex<T>::getPath() const {
-    return this->path;
-}
+Edge<T> *Vertex<T>::getPath() const { return this->path; }
 
 template <class T>
-std::vector<Edge<T> *> Vertex<T>::getIncoming() const {
-    return this->incoming;
-}
+std::vector<Edge<T> *> Vertex<T>::getIncoming() const { return this->incoming; }
 
 template <class T>
-void Vertex<T>::setInfo(T in) {
-    this->info = in;
-}
+void Vertex<T>::setInfo(T in) { this->info = in; }
 
 template <class T>
-void Vertex<T>::setVisited(bool visited) {
-    this->visited = visited;
-}
+void Vertex<T>::setVisited(bool visited) { this->visited = visited; }
 
 template <class T>
-void Vertex<T>::setProcessing(bool processing) {
-    this->processing = processing;
-}
+void Vertex<T>::setProcessing(bool processing) { this->processing = processing; }
 
 template <class T>
-void Vertex<T>::setIndegree(unsigned int indegree) {
-    this->indegree = indegree;
-}
+void Vertex<T>::setIndegree(unsigned int indegree) { this->indegree = indegree; }
 
 template <class T>
-void Vertex<T>::setDist(double dist) {
-    this->dist = dist;
-}
+void Vertex<T>::setDist(double dist) { this->dist = dist; }
 
 template <class T>
-void Vertex<T>::setPath(Edge<T> *path) {
-    this->path = path;
-}
+void Vertex<T>::setPath(Edge<T> *path) { this->path = path; }
 
 template <class T>
 void Vertex<T>::deleteEdge(Edge<T> *edge) {
     Vertex<T> *dest = edge->getDest();
-    // Remove the corresponding edge from the incoming list
     auto it = dest->incoming.begin();
     while (it != dest->incoming.end()) {
         if ((*it)->getOrig()->getInfo() == info) {
@@ -326,72 +290,46 @@ void Vertex<T>::deleteEdge(Edge<T> *edge) {
 /********************** Edge  ****************************/
 
 template <class T>
-Edge<T>::Edge(Vertex<T> *orig, Vertex<T> *dest, double w): orig(orig), dest(dest), weight(w),flow(0) {}
+Edge<T>::Edge(Vertex<T> *orig, Vertex<T> *dest, double w): orig(orig), dest(dest), weight(w), flow(0) {}
 
 template <class T>
-Vertex<T> * Edge<T>::getDest() const {
-    return this->dest;
-}
+Vertex<T> * Edge<T>::getDest() const { return this->dest; }
 
 template <class T>
-double Edge<T>::getWeight() const {
-    return this->weight;
-}
+double Edge<T>::getWeight() const { return this->weight; }
 
 template <class T>
-Vertex<T> * Edge<T>::getOrig() const {
-    return this->orig;
-}
+Vertex<T> * Edge<T>::getOrig() const { return this->orig; }
 
 template <class T>
-Edge<T> *Edge<T>::getReverse() const {
-    return this->reverse;
-}
+Edge<T> *Edge<T>::getReverse() const { return this->reverse; }
 
 template <class T>
-bool Edge<T>::isSelected() const {
-    return this->selected;
-}
+bool Edge<T>::isSelected() const { return this->selected; }
 
 template <class T>
-double Edge<T>::getFlow() const {
-    return flow;
-}
+double Edge<T>::getFlow() const { return flow; }
 
 template <class T>
-void Edge<T>::setSelected(bool selected) {
-    this->selected = selected;
-}
+void Edge<T>::setSelected(bool selected) { this->selected = selected; }
 
 template <class T>
-void Edge<T>::setReverse(Edge<T> *reverse) {
-    this->reverse = reverse;
-}
+void Edge<T>::setReverse(Edge<T> *reverse) { this->reverse = reverse; }
 
 template <class T>
-void Edge<T>::setFlow(double flow) {
-    this->flow = flow;
-}
+void Edge<T>::setFlow(double flow) { this->flow = flow; }
+
 template <class T>
-void Edge<T>::setWeight(double w) {
-    this->weight = w;
-}
+void Edge<T>::setWeight(double w) { this->weight = w; }
 
 /********************** Graph  ****************************/
 
 template <class T>
-int Graph<T>::getNumVertex() const {
-    return vertexSet.size();
-}
+int Graph<T>::getNumVertex() const { return vertexSet.size(); }
 
 template <class T>
-std::vector<Vertex<T> *> Graph<T>::getVertexSet() const {
-    return vertexSet;
-}
+std::vector<Vertex<T> *> Graph<T>::getVertexSet() const { return vertexSet; }
 
-/*
- * Auxiliary function to find a vertex with a given content.
- */
 template <class T>
 Vertex<T> * Graph<T>::findVertex(const T &in) const {
     for (auto v : vertexSet)
@@ -400,9 +338,6 @@ Vertex<T> * Graph<T>::findVertex(const T &in) const {
     return nullptr;
 }
 
-/*
- * Finds the index of the vertex with a given content.
- */
 template <class T>
 int Graph<T>::findVertexIdx(const T &in) const {
     for (unsigned i = 0; i < vertexSet.size(); i++)
@@ -410,10 +345,7 @@ int Graph<T>::findVertexIdx(const T &in) const {
             return i;
     return -1;
 }
-/*
- *  Adds a vertex with a given content or info (in) to a graph (this).
- *  Returns true if successful, and false if a vertex with that content already exists.
- */
+
 template <class T>
 bool Graph<T>::addVertex(const T &in) {
     if (findVertex(in) != nullptr)
@@ -422,11 +354,6 @@ bool Graph<T>::addVertex(const T &in) {
     return true;
 }
 
-/*
- *  Removes a vertex with a given content (in) from a graph (this), and
- *  all outgoing and incoming edges.
- *  Returns true if successful, and false if such vertex does not exist.
- */
 template <class T>
 bool Graph<T>::removeVertex(const T &in) {
     for (auto it = vertexSet.begin(); it != vertexSet.end(); it++) {
@@ -444,36 +371,19 @@ bool Graph<T>::removeVertex(const T &in) {
     return false;
 }
 
-/*
- * Adds an edge to a graph (this), given the contents of the source and
- * destination vertices and the edge weight (w).
- * Returns true if successful, and false if the source or destination vertex does not exist.
- */
 template <class T>
 bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
     auto v1 = findVertex(sourc);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
-
-    // Aresta forward (capacidade w)
     auto e1 = v1->addEdge(v2, w);
-
-    // Aresta residual (capacidade 0)
-    auto e2 = v2->addEdge(v1, 0);
-
-    // Ligar as duas
+    auto e2 = v2->addEdge(v1, 0);  // aresta residual com capacidade 0
     e1->setReverse(e2);
     e2->setReverse(e1);
-
     return true;
 }
 
-/*
- * Removes an edge from a graph (this).
- * The edge is identified by the source (sourc) and destination (dest) contents.
- * Returns true if successful, and false if such edge does not exist.
- */
 template <class T>
 bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
     Vertex<T> * srcVertex = findVertex(sourc);
