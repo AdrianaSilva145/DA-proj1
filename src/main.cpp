@@ -5,7 +5,9 @@
 
 using namespace std;
 
-// Apresenta o menu principal do programa no modo interativo.
+/**
+ * @brief Apresenta o menu principal do programa no modo interativo.
+ */
 void showMenu() {
     cout << "\n===== MENU PRINCIPAL =====\n";
     cout << "1. Carregar ficheiro de entrada\n";
@@ -21,24 +23,25 @@ void showMenu() {
 /**
  * @brief Ponto de entrada principal do programa.
  *
- * Suporta dois modos de execucao:
+ * Suporta dois modos de execução:
  *
  * **Modo batch** (linha de comandos):
  * @code
- * ./myProg -b input.csv [risk_output.csv]
+ * ./assignTool -b input.csv [risk_output.csv]
  * @endcode
- * - O 2o argumento e o ficheiro CSV de entrada.
- * - O 3o argumento (opcional) e o ficheiro de saida da analise de risco.
- * - O ficheiro de saida da atribuicao e determinado pelo campo OutputFileName do CSV.
- * - Mensagens de erro sao enviadas para stderr.
+ * - O 2.º argumento é o ficheiro CSV de entrada.
+ * - O 3.º argumento (opcional) é o ficheiro de saída da análise de risco;
+ *   se omitido, é usado o nome "risk.csv".
+ * - O ficheiro de saída da atribuição é determinado pelo campo OutputFileName do CSV.
+ * - Mensagens de erro são enviadas para stderr.
  *
  * **Modo interativo** (sem argumentos):
  * Apresenta um menu que permite carregar ficheiros, visualizar dados e
  * executar as funcionalidades implementadas.
  *
- * @param argc Numero de argumentos da linha de comandos.
+ * @param argc Número de argumentos da linha de comandos.
  * @param argv Array de argumentos da linha de comandos.
- * @return 0 se bem-sucedido, 1 em caso de erro.
+ * @return 0 se bem-sucedido; 1 em caso de erro.
  */
 int main(int argc, char* argv[]) {
     vector<Submission> submissions;

@@ -3,10 +3,22 @@
 #include <vector>
 #include <algorithm>
 
-// Determina o dominio de correspondencia entre uma submissao e um revisor.
-// Modo 1: so dominios primarios. Modo 2: secundario da submissao. Modo 3: todos.
-// Retorna o numero do dominio correspondente (>0), ou 0 se nao houver correspondencia.
-// Complexidade: O(1)
+/**
+ * @brief Determina o domínio de correspondência entre uma submissão e um revisor.
+ *
+ * Verifica se existe compatibilidade de domínios entre a submissão e o revisor,
+ * de acordo com o modo de correspondência especificado:
+ * - Modo 1: apenas domínios primários de ambos os lados.
+ * - Modo 2: domínio primário ou secundário da submissão contra o domínio primário do revisor.
+ * - Modo 3: todos os domínios primários e secundários de ambos os lados.
+ *
+ * @param s    Submissão a verificar.
+ * @param r    Revisor a verificar.
+ * @param mode Modo de correspondência (1, 2 ou 3).
+ * @return O número do domínio correspondente (> 0) se houver compatibilidade; 0 caso contrário.
+ *
+ * @note Complexidade temporal: O(1).
+ */
 static int match(const Submission &s, const Reviewer &r, int mode) {
     if (mode == 1) {
         if (s.primaryTopic == r.primaryExpertise) return s.primaryTopic;
@@ -24,8 +36,17 @@ static int match(const Submission &s, const Reviewer &r, int mode) {
     return 0;
 }
 
-// Repoe todos os fluxos do grafo a zero (apenas arestas forward com peso > 0).
-// Complexidade: O(V + E)
+/**
+ * @brief Repõe todos os fluxos do grafo a zero.
+ *
+ * Percorre todos os vértices e todas as arestas do grafo, repondo o fluxo a zero
+ * em cada aresta forward (peso > 0) e na respectiva aresta residual. Utilizado
+ * antes de cada re-execução do Edmonds-Karp na análise de risco.
+ *
+ * @param g Grafo de fluxo a repor.
+ *
+ * @note Complexidade temporal: O(V + E), onde V = vértices e E = arestas do grafo.
+ */
 static void resetFlows(Graph<int> &g) {
     for (auto v : g.getVertexSet()) {
         for (auto e : v->getAdj()) {
@@ -39,33 +60,41 @@ static void resetFlows(Graph<int> &g) {
 }
 
 /**
- * @brief Estrutura interna que representa uma aresta de correspondencia submissao-revisor.
+ * @brief Estrutura interna que representa uma aresta de correspondência submissão–revisor.
  *
- * Guarda os indices e IDs necessarios para reconstruir a atribuicao apos correr
- * o Max-Flow, juntamente com um ponteiro para a aresta de fluxo real no grafo.
+ * Guarda os índices e identificadores necessários para reconstruir a atribuição após
+ * a execução do fluxo máximo, juntamente com um ponteiro para a aresta forward
+ * correspondente no grafo de fluxo.
  */
 struct MatchEdge {
-    int submissionIndex; ///< Indice no vector de submissoes.
-    int reviewerIndex;   ///< Indice no vector de revisores ordenados.
-    int reviewerId;      ///< ID real do revisor (dos dados de entrada).
-    int matchDomain;     ///< Numero do dominio correspondente.
+    int submissionIndex; ///< Índice no vector de submissões.
+    int reviewerIndex;   ///< Índice no vector de revisores ordenados.
+    int reviewerId;      ///< Identificador real do revisor (dos dados de entrada).
+    int matchDomain;     ///< Número do domínio correspondente.
     Edge<int>* edge;     ///< Ponteiro para a aresta forward no grafo de fluxo.
 
     /**
-     * @brief Constroi um MatchEdge com todos os campos.
-     * @param si  Indice da submissao.
-     * @param ri  Indice do revisor.
-     * @param rid ID do revisor.
-     * @param d   Dominio correspondente.
+     * @brief Constrói um MatchEdge com todos os campos.
+     * @param si  Índice da submissão.
+     * @param ri  Índice do revisor.
+     * @param rid Identificador do revisor.
+     * @param d   Domínio correspondente.
      * @param e   Ponteiro para a aresta de fluxo.
      */
     MatchEdge(int si, int ri, int rid, int d, Edge<int>* e)
         : submissionIndex(si), reviewerIndex(ri), reviewerId(rid), matchDomain(d), edge(e) {}
 };
 
-// Liberta toda a memoria alocada para o grafo de fluxo de forma segura.
-// Efectua a libertacao em duas passagens para evitar use-after-free.
-// Complexidade: O(V + E)
+/**
+ * @brief Liberta toda a memória alocada para o grafo de fluxo.
+ *
+ * Efectua a libertação em duas passagens para evitar use-after-free: primeiro
+ * elimina todas as arestas de cada vértice e só depois elimina os vértices.
+ *
+ * @param g Grafo de fluxo a libertar.
+ *
+ * @note Complexidade temporal: O(V + E), onde V = vértices e E = arestas do grafo.
+ */
 static void freeGraph(Graph<int> &g) {
     for (auto v : g.getVertexSet())
         for (auto e : v->getAdj())
@@ -80,6 +109,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
                                     const Control& control,
                                     const std::string& outputFile)
 {
+    // Ordenar revisores por ID para garantir ordem determinística na rede de fluxo.
     std::vector<Reviewer> sortedReviewers = reviewers;
     std::sort(sortedReviewers.begin(), sortedReviewers.end(),
               [](const Reviewer &a, const Reviewer &b) { return a.id < b.id; });
@@ -95,21 +125,21 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     std::vector<int> revNode(sortedReviewers.size());
     std::vector<MatchEdge> matchEdges;
 
-    // Source -> nos de submissao (capacidade = MinReviewsPerSubmission)
+    // Arestas source -> nós de submissão (capacidade = MinReviewsPerSubmission).
     for (size_t i = 0; i < submissions.size(); i++) {
         subNode[i] = submissions[i].id + 1000;
         g.addVertex(subNode[i]);
         g.addEdge(SOURCE, subNode[i], params.MinReviewsPerSubmission);
     }
 
-    // Nos de revisor -> Sink (capacidade = MaxReviewsPerReviewer)
+    // Arestas nós de revisor -> sink (capacidade = MaxReviewsPerReviewer).
     for (size_t i = 0; i < sortedReviewers.size(); i++) {
         revNode[i] = sortedReviewers[i].id + 2000;
         g.addVertex(revNode[i]);
         g.addEdge(revNode[i], SINK, params.MaxReviewsPerReviewer);
     }
 
-    // Arestas submissao -> revisor (capacidade 1) para pares de dominios compativeis
+    // Arestas submissão -> revisor (capacidade 1) para pares de domínios compatíveis.
     for (size_t s = 0; s < submissions.size(); s++) {
         for (size_t r = 0; r < sortedReviewers.size(); r++) {
             int mDomain = match(submissions[s], sortedReviewers[r], control.generateAssignments);
@@ -117,6 +147,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
             g.addEdge(subNode[s], revNode[r], 1);
 
+            // Guardar ponteiro para a aresta recém-criada para reconstrução posterior.
             Vertex<int>* vs = g.findVertex(subNode[s]);
             Edge<int>* e = nullptr;
             for (auto edge : vs->getAdj()) {
@@ -136,7 +167,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
     if (!out.is_open()) { freeGraph(g); return false; }
 
     if (control.generateAssignments != 0) {
-        // Ordenar por ID de submissao, depois por ID de revisor
+        // Ordenar por ID de submissão, depois por ID de revisor.
         std::sort(matchEdges.begin(), matchEdges.end(),
                   [&](const MatchEdge &a, const MatchEdge &b) {
                       int sa = submissions[a.submissionIndex].id;
@@ -160,7 +191,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
             }
         }
 
-        // Vista dual: ordenada por ID de revisor
+        // Vista dual: ordenada por ID de revisor.
         out << "#ReviewerId,SubmissionId,Match\n";
 
         std::vector<MatchEdge> reviewerOrder;
@@ -182,7 +213,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
 
         out << "#Total: " << total << "\n";
 
-        // Reportar submissoes com revisoes insuficientes
+        // Reportar submissões com revisões insuficientes.
         if (flow < maxPossibleFlow) {
             out << "#SubmissionId,Domain,MissingReviews\n";
             for (size_t i = 0; i < submissions.size(); i++) {
@@ -196,11 +227,14 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
         }
     }
 
-    // --- Analise de Risco (T2.2: K=1, T2.3: K>1) ---
-    // Para cada combinacao de K revisores, a aresta revisor->Sink e temporariamente
-    // colocada com capacidade 0. O Max-Flow e re-executado e, se o fluxo for inferior
-    // ao necessario, essa combinacao e considerada critica.
-    // Complexidade K=1: O(N*V*E^2). K>1: O(C(N,K)*V*E^2).
+    // --- Análise de risco ---
+    // Para cada combinação de K revisores:
+    //   1. A capacidade da aresta revisor->sink é colocada a 0 (simula ausência do revisor).
+    //   2. Todos os fluxos são repostos a zero.
+    //   3. O Edmonds-Karp é re-executado sobre o grafo modificado.
+    //   4. Se o fluxo obtido for inferior ao esperado, a combinação é crítica.
+    //   5. A capacidade é restaurada antes da iteração seguinte.
+    // As C(N,K) combinações são enumeradas com std::next_permutation num vector selector.
     if (control.riskAnalysis > 0) {
         int K = control.riskAnalysis;
         int N = (int)sortedReviewers.size();
@@ -209,6 +243,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
         std::vector<int> criticalReviewers;
         std::vector<std::vector<int>> criticalCombinations;
 
+        // Recolher ponteiros para as arestas revisor->sink de cada revisor.
         std::vector<Edge<int>*> revToSinkEdges(N, nullptr);
         for (int i = 0; i < N; i++) {
             Vertex<int>* vr = g.findVertex(revNode[i]);
@@ -220,6 +255,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
             }
         }
 
+        // Vector selector booleano: K posições verdadeiras indicam os revisores removidos.
         std::vector<bool> selector(N, false);
         std::fill(selector.end() - K, selector.end(), true);
 
@@ -243,6 +279,7 @@ bool Assignment::generateAssignment(const std::vector<Submission>& submissions,
                     criticalCombinations.push_back(droppedIds);
             }
 
+            // Restaurar capacidades para a iteração seguinte.
             for (int i = 0; i < N; i++) {
                 if (selector[i] && revToSinkEdges[i])
                     revToSinkEdges[i]->setWeight(params.MaxReviewsPerReviewer);
@@ -282,6 +319,7 @@ bool Assignment::generateRiskAnalysis(const std::vector<Submission>& submissions
                                      const Control& control,
                                      const std::string& riskFile)
 {
+    // Ordenar revisores por ID para garantir ordem determinística na rede de fluxo.
     std::vector<Reviewer> sortedReviewers = reviewers;
     std::sort(sortedReviewers.begin(), sortedReviewers.end(),
               [](const Reviewer &a, const Reviewer &b) { return a.id < b.id; });
@@ -330,6 +368,7 @@ bool Assignment::generateRiskAnalysis(const std::vector<Submission>& submissions
 
     int maxPossibleFlow = (int)submissions.size() * params.MinReviewsPerSubmission;
 
+    // Execução inicial do fluxo máximo (necessária para inicializar o estado do grafo).
     MaxFlow::edmondsKarp(g, SOURCE, SINK);
 
     std::ofstream out(riskFile, std::ios::out | std::ios::trunc);
@@ -342,6 +381,7 @@ bool Assignment::generateRiskAnalysis(const std::vector<Submission>& submissions
     std::vector<int> criticalReviewers;
     std::vector<std::vector<int>> criticalCombinations;
 
+    // Recolher ponteiros para as arestas revisor->sink de cada revisor.
     std::vector<Edge<int>*> revToSinkEdges(N, nullptr);
     for (int i = 0; i < N; i++) {
         Vertex<int>* vr = g.findVertex(revNode[i]);
@@ -353,6 +393,7 @@ bool Assignment::generateRiskAnalysis(const std::vector<Submission>& submissions
         }
     }
 
+    // Vector selector booleano: K posições verdadeiras indicam os revisores removidos.
     std::vector<bool> selector(N, false);
     std::fill(selector.end() - K, selector.end(), true);
 
@@ -377,6 +418,7 @@ bool Assignment::generateRiskAnalysis(const std::vector<Submission>& submissions
                 criticalCombinations.push_back(droppedIds);
         }
 
+        // Restaurar capacidades para a iteração seguinte.
         for (int i = 0; i < N; i++) {
             if (selector[i] && revToSinkEdges[i])
                 revToSinkEdges[i]->setWeight(params.MaxReviewsPerReviewer);

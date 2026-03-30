@@ -140,16 +140,19 @@ Include dependency graph for Assignment.cpp:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMatchEdge.html">MatchEdge</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estrutura interna que representa uma aresta de correspondencia submissao-revisor.  <a href="structMatchEdge.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estrutura interna que representa uma aresta de correspondência submissão–revisor.  <a href="structMatchEdge.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a32ccdb7ebde3d17fae5713004522b00d" id="r_a32ccdb7ebde3d17fae5713004522b00d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">static</a> <a class="el" href="classEdge.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Assignment_8cpp.html#a32ccdb7ebde3d17fae5713004522b00d">match</a> (<a class="el" href="classEdge.html">const</a> <a class="el" href="structSubmission.html">Submission</a> &amp;<a class="el" href="classEdge.html">s</a>, <a class="el" href="classEdge.html">const</a> <a class="el" href="structReviewer.html">Reviewer</a> &amp;<a class="el" href="classEdge.html">r</a>, <a class="el" href="classEdge.html">int</a> <a class="el" href="classEdge.html">mode</a>)</td></tr>
+<tr class="memdesc:a32ccdb7ebde3d17fae5713004522b00d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determina o domínio de correspondência entre uma submissão e um revisor.  <br /></td></tr>
 <tr class="separator:a32ccdb7ebde3d17fae5713004522b00d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7f28fc16ea310621d04606421482065" id="r_ae7f28fc16ea310621d04606421482065"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">static</a> <a class="el" href="classEdge.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Assignment_8cpp.html#ae7f28fc16ea310621d04606421482065">resetFlows</a> (<a class="el" href="classGraph.html">Graph</a>&lt; <a class="el" href="classEdge.html">int</a> &gt; &amp;<a class="el" href="classEdge.html">g</a>)</td></tr>
+<tr class="memdesc:ae7f28fc16ea310621d04606421482065"><td class="mdescLeft">&#160;</td><td class="mdescRight">Repõe todos os fluxos do grafo a zero.  <br /></td></tr>
 <tr class="separator:ae7f28fc16ea310621d04606421482065"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf833a2c577e8f022028a75306452c85" id="r_aaf833a2c577e8f022028a75306452c85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">static</a> <a class="el" href="classEdge.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Assignment_8cpp.html#aaf833a2c577e8f022028a75306452c85">freeGraph</a> (<a class="el" href="classGraph.html">Graph</a>&lt; <a class="el" href="classEdge.html">int</a> &gt; &amp;<a class="el" href="classEdge.html">g</a>)</td></tr>
+<tr class="memdesc:aaf833a2c577e8f022028a75306452c85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Liberta toda a memória alocada para o grafo de fluxo.  <br /></td></tr>
 <tr class="separator:aaf833a2c577e8f022028a75306452c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -176,6 +179,16 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Liberta toda a memória alocada para o grafo de fluxo. </p>
+<p>Efectua a libertação em duas passagens para evitar use-after-free: primeiro elimina todas as arestas de cada vértice e só depois elimina os vértices.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">g</td><td>Grafo de fluxo a libertar.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Complexidade temporal: O(V + E), onde V = vértices e E = arestas do grafo. </dd></dl>
 
 </div>
 </div>
@@ -219,6 +232,23 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Determina o domínio de correspondência entre uma submissão e um revisor. </p>
+<p>Verifica se existe compatibilidade de domínios entre a submissão e o revisor, de acordo com o modo de correspondência especificado:</p><ul>
+<li>Modo 1: apenas domínios primários de ambos os lados.</li>
+<li>Modo 2: domínio primário ou secundário da submissão contra o domínio primário do revisor.</li>
+<li>Modo 3: todos os domínios primários e secundários de ambos os lados.</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>Submissão a verificar. </td></tr>
+    <tr><td class="paramname">r</td><td>Revisor a verificar. </td></tr>
+    <tr><td class="paramname">mode</td><td>Modo de correspondência (1, 2 ou 3). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>O número do domínio correspondente (&gt; 0) se houver compatibilidade; 0 caso contrário.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Complexidade temporal: O(1). </dd></dl>
+
 </div>
 </div>
 <a id="ae7f28fc16ea310621d04606421482065" name="ae7f28fc16ea310621d04606421482065"></a>
@@ -244,6 +274,16 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Repõe todos os fluxos do grafo a zero. </p>
+<p>Percorre todos os vértices e todas as arestas do grafo, repondo o fluxo a zero em cada aresta forward (peso &gt; 0) e na respectiva aresta residual. Utilizado antes de cada re-execução do Edmonds-Karp na análise de risco.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">g</td><td>Grafo de fluxo a repor.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Complexidade temporal: O(V + E), onde V = vértices e E = arestas do grafo. </dd></dl>
 
 </div>
 </div>

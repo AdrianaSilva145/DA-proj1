@@ -99,10 +99,10 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:ae143f4081965aaa80af89fc3a1b5baa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Título do artigo.  <br /></td></tr>
 <tr class="separator:ae143f4081965aaa80af89fc3a1b5baa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a853f337b093f91f4192c70df3e02d631" id="r_a853f337b093f91f4192c70df3e02d631"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSubmission.html#a853f337b093f91f4192c70df3e02d631">authors</a></td></tr>
-<tr class="memdesc:a853f337b093f91f4192c70df3e02d631"><td class="mdescLeft">&#160;</td><td class="mdescRight">Autor(es) do artigo.  <br /></td></tr>
+<tr class="memdesc:a853f337b093f91f4192c70df3e02d631"><td class="mdescLeft">&#160;</td><td class="mdescRight">Autores do artigo.  <br /></td></tr>
 <tr class="separator:a853f337b093f91f4192c70df3e02d631"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab524f4484bf346c7ba0d94b0a7dd114c" id="r_ab524f4484bf346c7ba0d94b0a7dd114c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSubmission.html#ab524f4484bf346c7ba0d94b0a7dd114c">email</a></td></tr>
-<tr class="memdesc:ab524f4484bf346c7ba0d94b0a7dd114c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Email de contacto.  <br /></td></tr>
+<tr class="memdesc:ab524f4484bf346c7ba0d94b0a7dd114c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Endereço de email de contacto.  <br /></td></tr>
 <tr class="separator:ab524f4484bf346c7ba0d94b0a7dd114c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3acc5309038ce8cee78a4edc6faab2e" id="r_aa3acc5309038ce8cee78a4edc6faab2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSubmission.html#aa3acc5309038ce8cee78a4edc6faab2e">primaryTopic</a></td></tr>
 <tr class="memdesc:aa3acc5309038ce8cee78a4edc6faab2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Domínio/tópico primário da submissão.  <br /></td></tr>
@@ -113,7 +113,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Estrutura que representa uma submissão de artigo científico. </p>
-<p>Cada submissão tem um identificador único, título, autor(es), email de contacto e um ou dois tópicos científicos (domínio primário obrigatório, secundário opcional). </p>
+<p>Cada submissão tem um identificador único, título, autores, endereço de email e um ou dois tópicos científicos. O domínio primário é obrigatório; o domínio secundário é opcional e representado por -1 quando ausente. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="afeaf67d844c18b29d9001d8f5f750fbe" name="afeaf67d844c18b29d9001d8f5f750fbe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afeaf67d844c18b29d9001d8f5f750fbe">&#9670;&#160;</a></span>Submission() <span class="overload">[1/2]</span></h2>
@@ -203,8 +203,8 @@ Public Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">id</td><td>Identificador único. </td></tr>
     <tr><td class="paramname">title</td><td>Título do artigo. </td></tr>
-    <tr><td class="paramname">authors</td><td>Autor(es). </td></tr>
-    <tr><td class="paramname">email</td><td>Email de contacto. </td></tr>
+    <tr><td class="paramname">authors</td><td>Autores. </td></tr>
+    <tr><td class="paramname">email</td><td>Endereço de email de contacto. </td></tr>
     <tr><td class="paramname">primary</td><td>Domínio primário. </td></tr>
     <tr><td class="paramname">secondary</td><td>Domínio secundário (-1 se não existir). </td></tr>
   </table>
@@ -226,7 +226,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Autor(es) do artigo. </p>
+<p>Autores do artigo. </p>
 
 </div>
 </div>
@@ -242,7 +242,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Email de contacto. </p>
+<p>Endereço de email de contacto. </p>
 
 </div>
 </div>

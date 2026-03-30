@@ -134,8 +134,8 @@ template&lt;<a class="el" href="classEdge.html">class</a> <a class="el" href="cl
 </div><div class="memdoc">
 
 <p>Algoritmo de Edmonds-Karp para cálculo de fluxo máximo. </p>
-<p>Implementação do algoritmo de Ford-Fulkerson usando BFS para encontrar caminhos aumentantes (variante Edmonds-Karp). Em cada iteração, o BFS encontra o caminho mais curto (em número de arestas) da source ao sink com capacidade residual positiva. O fluxo é então aumentado ao longo desse caminho pelo valor do bottleneck.</p>
-<p>A rede de fluxo deve ter arestas forward com capacidade w e arestas residuais (reverse) com capacidade 0, ligadas pelo ponteiro reverse. O método <a class="el" href="classGraph.html#ac61af3aafe6277215f5a3b3cc7d58ce2">Graph::addEdge()</a> já cria automaticamente ambas as arestas.</p>
+<p>Implementação do algoritmo de Ford-Fulkerson usando BFS para encontrar caminhos aumentantes conhecido como Edmonds-Karp. Em cada iteração, o BFS encontra o caminho mais curto (em número de arestas) da source ao sink com capacidade residual positiva. O fluxo é então aumentado ao longo desse caminho pelo valor do bottleneck (capacidade residual mínima no caminho). O processo repete-se até não existirem mais caminhos aumentantes.</p>
+<p>O grafo de fluxo deve ter arestas forward com capacidade w e arestas residuais (reverse) com capacidade 0, ligadas pelo ponteiro reverse. O método <a class="el" href="classGraph.html#ac61af3aafe6277215f5a3b3cc7d58ce2">Graph::addEdge()</a> cria automaticamente ambas as arestas.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">T</td><td>Tipo do identificador dos vértices do grafo. </td></tr>
@@ -144,14 +144,14 @@ template&lt;<a class="el" href="classEdge.html">class</a> <a class="el" href="cl
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">g</td><td>Grafo de fluxo (modificado internamente com os fluxos). </td></tr>
+    <tr><td class="paramname">g</td><td>Grafo de fluxo (os fluxos são modificados internamente). </td></tr>
     <tr><td class="paramname">sourceInfo</td><td>Identificador do vértice source. </td></tr>
     <tr><td class="paramname">sinkInfo</td><td>Identificador do vértice sink. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Valor do fluxo máximo encontrado.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Complexidade Temporal: O(V * E^2) onde V = vértices, E = arestas. Esta é a complexidade garantida de Edmonds-Karp independentemente das capacidades das arestas, ao contrário do Ford-Fulkerson genérico. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Complexidade temporal: O(V·E²), onde V = número de vértices e E = número de arestas. Esta complexidade é garantida independentemente das capacidades das arestas, ao contrário do Ford-Fulkerson genérico. </dd></dl>
 
 </div>
 </div>

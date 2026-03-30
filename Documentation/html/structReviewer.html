@@ -99,18 +99,18 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:af9ab4025cd39328e9ce594ef165e9e9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nome completo do revisor.  <br /></td></tr>
 <tr class="separator:af9ab4025cd39328e9ce594ef165e9e9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ae05709e98e328427aed3ead8912fd8" id="r_a5ae05709e98e328427aed3ead8912fd8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structReviewer.html#a5ae05709e98e328427aed3ead8912fd8">email</a></td></tr>
-<tr class="memdesc:a5ae05709e98e328427aed3ead8912fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Email do revisor.  <br /></td></tr>
+<tr class="memdesc:a5ae05709e98e328427aed3ead8912fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Endereço de correio electrónico do revisor.  <br /></td></tr>
 <tr class="separator:a5ae05709e98e328427aed3ead8912fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a6ba130656856000843bbc57e811486" id="r_a1a6ba130656856000843bbc57e811486"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structReviewer.html#a1a6ba130656856000843bbc57e811486">primaryExpertise</a></td></tr>
-<tr class="memdesc:a1a6ba130656856000843bbc57e811486"><td class="mdescLeft">&#160;</td><td class="mdescRight">Área de expertise primária.  <br /></td></tr>
+<tr class="memdesc:a1a6ba130656856000843bbc57e811486"><td class="mdescLeft">&#160;</td><td class="mdescRight">Área de especialização primária.  <br /></td></tr>
 <tr class="separator:a1a6ba130656856000843bbc57e811486"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19fc5d836237badc57737b4b8bbdcd10" id="r_a19fc5d836237badc57737b4b8bbdcd10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structReviewer.html#a19fc5d836237badc57737b4b8bbdcd10">secondaryExpertise</a></td></tr>
-<tr class="memdesc:a19fc5d836237badc57737b4b8bbdcd10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Área de expertise secundária (-1 se não existir).  <br /></td></tr>
+<tr class="memdesc:a19fc5d836237badc57737b4b8bbdcd10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Área de especialização secundária (-1 se não existir).  <br /></td></tr>
 <tr class="separator:a19fc5d836237badc57737b4b8bbdcd10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Estrutura que representa um revisor científico. </p>
-<p>Cada revisor tem um identificador único, nome, email e uma ou duas áreas de expertise (primária obrigatória, secundária opcional). </p>
+<p>Cada revisor tem um identificador único, nome, endereço de correio electrónico e uma ou duas áreas de especialização. A área primária é obrigatória; a área secundária é opcional e representada por -1 quando ausente. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2bf0984f50d8970ed4a01dc6d867c052" name="a2bf0984f50d8970ed4a01dc6d867c052"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2bf0984f50d8970ed4a01dc6d867c052">&#9670;&#160;</a></span>Reviewer() <span class="overload">[1/2]</span></h2>
@@ -194,9 +194,9 @@ Public Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">id</td><td>Identificador único. </td></tr>
     <tr><td class="paramname">name</td><td>Nome do revisor. </td></tr>
-    <tr><td class="paramname">email</td><td>Email do revisor. </td></tr>
-    <tr><td class="paramname">primary</td><td>Expertise primária. </td></tr>
-    <tr><td class="paramname">secondary</td><td>Expertise secundária (-1 se não existir). </td></tr>
+    <tr><td class="paramname">email</td><td>Endereço de correio electrónico do revisor. </td></tr>
+    <tr><td class="paramname">primary</td><td>Área de especialização primária. </td></tr>
+    <tr><td class="paramname">secondary</td><td>Área de especialização secundária (-1 se não existir). </td></tr>
   </table>
   </dd>
 </dl>
@@ -216,7 +216,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Email do revisor. </p>
+<p>Endereço de correio electrónico do revisor. </p>
 
 </div>
 </div>
@@ -264,7 +264,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Área de expertise primária. </p>
+<p>Área de especialização primária. </p>
 
 </div>
 </div>
@@ -280,7 +280,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Área de expertise secundária (-1 se não existir). </p>
+<p>Área de especialização secundária (-1 se não existir). </p>
 
 </div>
 </div>

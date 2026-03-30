@@ -76,7 +76,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Classe responsavel pela leitura e parsing do ficheiro CSV de entrada.  
+<p>Classe responsável pela leitura e parsing do ficheiro CSV de entrada.  
  <a href="structParser.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Parser_8h_source.html">Parser.h</a>&gt;</code></p>
@@ -84,12 +84,12 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ac56e247a268ab998f3b852de98bd8463" id="r_ac56e247a268ab998f3b852de98bd8463"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">static</a> <a class="el" href="classEdge.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structParser.html#ac56e247a268ab998f3b852de98bd8463">parseCSV</a> (<a class="el" href="classEdge.html">const</a> std::string &amp;<a class="el" href="classEdge.html">filepath</a>, std::vector&lt; <a class="el" href="structSubmission.html">Submission</a> &gt; &amp;<a class="el" href="classEdge.html">submissions</a>, std::vector&lt; <a class="el" href="structReviewer.html">Reviewer</a> &gt; &amp;<a class="el" href="classEdge.html">reviewers</a>, <a class="el" href="structParameters.html">Parameters</a> &amp;<a class="el" href="classEdge.html">params</a>, <a class="el" href="structControl.html">Control</a> &amp;<a class="el" href="classEdge.html">control</a>)</td></tr>
-<tr class="memdesc:ac56e247a268ab998f3b852de98bd8463"><td class="mdescLeft">&#160;</td><td class="mdescRight">Le e faz parsing do ficheiro CSV de entrada.  <br /></td></tr>
+<tr class="memdesc:ac56e247a268ab998f3b852de98bd8463"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lê e faz parsing do ficheiro CSV de entrada.  <br /></td></tr>
 <tr class="separator:ac56e247a268ab998f3b852de98bd8463"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Classe responsavel pela leitura e parsing do ficheiro CSV de entrada. </p>
-<p>Le o ficheiro no formato definido pelo enunciado, com seccoes delimitadas por #: #Submissions, #Reviewers, <a class="el" href="structParameters.html" title="Estrutura que representa os parâmetros do problema de atribuição de revisões.">Parameters</a> e <a class="el" href="structControl.html" title="Estrutura que representa as configurações de controlo do programa.">Control</a>. Ignora comentarios (linhas comecadas por # ou conteudo apos #) e linhas vazias. Limpa automaticamente espacos e aspas dos campos. </p>
+<div class="textblock"><p>Classe responsável pela leitura e parsing do ficheiro CSV de entrada. </p>
+<p>Lê o ficheiro no formato definido pelo enunciado, com secções delimitadas por #: #Submissions, #Reviewers, <a class="el" href="structParameters.html" title="Estrutura que representa os parâmetros numéricos do problema de atribuição de revisões.">Parameters</a> e <a class="el" href="structControl.html" title="Estrutura que representa as configurações de controlo do programa.">Control</a>. Ignora comentários (linhas iniciadas por # ou conteúdo após #) e linhas vazias. Remove automaticamente espaços em branco e aspas dos campos lidos. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ac56e247a268ab998f3b852de98bd8463" name="ac56e247a268ab998f3b852de98bd8463"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac56e247a268ab998f3b852de98bd8463">&#9670;&#160;</a></span>parseCSV()</h2>
@@ -143,20 +143,20 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Le e faz parsing do ficheiro CSV de entrada. </p>
-<p>Itera linha a linha, identificando a seccao atual pelo cabecalho e processando cada linha de dados de acordo. Campos opcionais (dominio secundario) sao tratados como -1 quando ausentes.</p>
+<p>Lê e faz parsing do ficheiro CSV de entrada. </p>
+<p>Itera o ficheiro linha a linha, identificando a secção corrente pelo cabeçalho e processando cada linha de dados em conformidade. Os campos opcionais (domínio secundário) são representados por -1 quando ausentes.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">filepath</td><td>Caminho para o ficheiro CSV de entrada. </td></tr>
-    <tr><td class="paramname">submissions</td><td>Vector a preencher com as submissoes lidas. </td></tr>
+    <tr><td class="paramname">submissions</td><td>Vector a preencher com as submissões lidas. </td></tr>
     <tr><td class="paramname">reviewers</td><td>Vector a preencher com os revisores lidos. </td></tr>
-    <tr><td class="paramname">params</td><td>Estrutura a preencher com os parametros lidos. </td></tr>
-    <tr><td class="paramname">control</td><td>Estrutura a preencher com as configuracoes de controlo lidas. </td></tr>
+    <tr><td class="paramname">params</td><td>Estrutura a preencher com os parâmetros lidos. </td></tr>
+    <tr><td class="paramname">control</td><td>Estrutura a preencher com as configurações de controlo lidas. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true se o ficheiro foi lido com sucesso, false caso contrario.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Complexidade Temporal: O(L*F) onde L = linhas do ficheiro, F = campos por linha. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true se o ficheiro foi lido com sucesso; false caso contrário.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Complexidade temporal: O(L·F), onde L = número de linhas do ficheiro e F = número de campos por linha. </dd></dl>
 
 </div>
 </div>

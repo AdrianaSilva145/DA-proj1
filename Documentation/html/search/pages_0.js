@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['assignment_20tool_0',['Scientific Conference Assignment Tool',['../index.html',1,'']]]
+  ['assignments_20tool_0',['Scientific Conference Assignments Tool',['../index.html',1,'']]]
 ];

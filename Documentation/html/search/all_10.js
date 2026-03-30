@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['saída_0',['Formato do Ficheiro de Saída',['../index.html#autotoc_md22',1,'']]],
-  ['scientific_20conference_20assignment_20tool_1',['Scientific Conference Assignment Tool',['../index.html',1,'']]],
+  ['saída_0',['Formato do Ficheiro de Saída',['../index.html#autotoc_md23',1,'']]],
+  ['scientific_20conference_20assignments_20tool_1',['Scientific Conference Assignments Tool',['../index.html',1,'']]],
   ['secondaryexpertise_2',['secondaryExpertise',['../structReviewer.html#a19fc5d836237badc57737b4b8bbdcd10',1,'Reviewer']]],
   ['secondaryreviewerexpertise_3',['secondaryReviewerExpertise',['../structParameters.html#a66edfe04b880cf7060f40eae3a1aa695',1,'Parameters']]],
   ['secondarysubmissiondomain_4',['secondarySubmissionDomain',['../structParameters.html#ab0a361652545514ac10813459c929f1f',1,'Parameters']]],
@@ -21,9 +21,9 @@ var searchData=
   ['setvisited_18',['setVisited',['../classVertex.html#a95a3f3c55f2ba371fae51d3fe0e76c23',1,'Vertex']]],
   ['setweight_19',['setWeight',['../classEdge.html#a93ce961112cdba81210591edf576ac3f',1,'Edge']]],
   ['showmenu_20',['showMenu',['../main_8cpp.html#aba5bd9067aa6f261123165a337c7957d',1,'main.cpp']]],
-  ['submission_21',['submission',['../structSubmission.html#afeaf67d844c18b29d9001d8f5f750fbe',1,'Submission::Submission()=default'],['../structSubmission.html#a1d74258a594d2ff679daa389a7623f8e',1,'Submission::Submission(int id, const std::string &amp;title, const std::string &amp;authors, const std::string &amp;email, int primary, int secondary)'],['../structSubmission.html',1,'Submission']]],
+  ['submission_21',['submission',['../structSubmission.html',1,'Submission'],['../index.html#autotoc_md29',1,'Submission'],['../structSubmission.html#a1d74258a594d2ff679daa389a7623f8e',1,'Submission::Submission(int id, const std::string &amp;title, const std::string &amp;authors, const std::string &amp;email, int primary, int secondary)'],['../structSubmission.html#afeaf67d844c18b29d9001d8f5f750fbe',1,'Submission::Submission()=default']]],
   ['submission_2eh_22',['Submission.h',['../Submission_8h.html',1,'']]],
   ['submissionindex_23',['submissionIndex',['../structMatchEdge.html#ab197902e17566ada87de7cd973c48056',1,'MatchEdge']]],
   ['submissions_24',['SUBMISSIONS',['../Parser_8cpp.html#a99f78dec5b5884642b44f101ef1d2460a560900af464e7abd0c187468e7ecdf6e',1,'Parser.cpp']]],
-  ['sucedida_25',['Atribuição bem-sucedida',['../index.html#autotoc_md23',1,'']]]
+  ['sucedida_25',['Atribuição bem-sucedida',['../index.html#autotoc_md24',1,'']]]
 ];

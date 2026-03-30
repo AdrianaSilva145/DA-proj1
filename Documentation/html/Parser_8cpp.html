@@ -142,11 +142,13 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="Parser_8cpp.html#a99f78dec5b5884642b44f101ef1d2460af722a5faa36087c914da53ebe4711f08">CONTROL</a>
 <br />
  }</td></tr>
+<tr class="memdesc:a99f78dec5b5884642b44f101ef1d2460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estados possíveis do parser durante a leitura do ficheiro CSV.  <a href="Parser_8cpp.html#a99f78dec5b5884642b44f101ef1d2460">More...</a><br /></td></tr>
 <tr class="separator:a99f78dec5b5884642b44f101ef1d2460"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a0d82ce4636606b1a87ab7191936cb568" id="r_a0d82ce4636606b1a87ab7191936cb568"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">static</a> std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Parser_8cpp.html#a0d82ce4636606b1a87ab7191936cb568">clean</a> (<a class="el" href="classEdge.html">const</a> std::string &amp;<a class="el" href="classEdge.html">s</a>)</td></tr>
+<tr class="memdesc:a0d82ce4636606b1a87ab7191936cb568"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove espaços em branco no início/fim e aspas de uma string.  <br /></td></tr>
 <tr class="separator:a0d82ce4636606b1a87ab7191936cb568"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
@@ -161,12 +163,20 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Estados possíveis do parser durante a leitura do ficheiro CSV. </p>
+<p>Cada valor representa a secção correntemente a ser processada. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460ac157bdf0b85a40d2619cbc8bc1ae5fe2" name="a99f78dec5b5884642b44f101ef1d2460ac157bdf0b85a40d2619cbc8bc1ae5fe2"></a>NONE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460a560900af464e7abd0c187468e7ecdf6e" name="a99f78dec5b5884642b44f101ef1d2460a560900af464e7abd0c187468e7ecdf6e"></a>SUBMISSIONS&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460ae3607e509604b10360a962a8925bdcd2" name="a99f78dec5b5884642b44f101ef1d2460ae3607e509604b10360a962a8925bdcd2"></a>REVIEWERS&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460ad11aad7580a1dfde8fd0be6832f6d31d" name="a99f78dec5b5884642b44f101ef1d2460ad11aad7580a1dfde8fd0be6832f6d31d"></a>PARAMETERS&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460af722a5faa36087c914da53ebe4711f08" name="a99f78dec5b5884642b44f101ef1d2460af722a5faa36087c914da53ebe4711f08"></a>CONTROL&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460ac157bdf0b85a40d2619cbc8bc1ae5fe2" name="a99f78dec5b5884642b44f101ef1d2460ac157bdf0b85a40d2619cbc8bc1ae5fe2"></a>NONE&#160;</td><td class="fielddoc"><p>Nenhuma secção ativa (antes do primeiro cabeçalho). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460a560900af464e7abd0c187468e7ecdf6e" name="a99f78dec5b5884642b44f101ef1d2460a560900af464e7abd0c187468e7ecdf6e"></a>SUBMISSIONS&#160;</td><td class="fielddoc"><p>A processar a secção #Submissions. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460ae3607e509604b10360a962a8925bdcd2" name="a99f78dec5b5884642b44f101ef1d2460ae3607e509604b10360a962a8925bdcd2"></a>REVIEWERS&#160;</td><td class="fielddoc"><p>A processar a secção #Reviewers. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460ad11aad7580a1dfde8fd0be6832f6d31d" name="a99f78dec5b5884642b44f101ef1d2460ad11aad7580a1dfde8fd0be6832f6d31d"></a>PARAMETERS&#160;</td><td class="fielddoc"><p>A processar a secção <a class="el" href="structParameters.html" title="Estrutura que representa os parâmetros numéricos do problema de atribuição de revisões.">Parameters</a>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a99f78dec5b5884642b44f101ef1d2460af722a5faa36087c914da53ebe4711f08" name="a99f78dec5b5884642b44f101ef1d2460af722a5faa36087c914da53ebe4711f08"></a>CONTROL&#160;</td><td class="fielddoc"><p>A processar a secção <a class="el" href="structControl.html" title="Estrutura que representa as configurações de controlo do programa.">Control</a>. </p>
+</td></tr>
 </table>
 
 </div>
@@ -195,6 +205,16 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Remove espaços em branco no início/fim e aspas de uma string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>String a limpar. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>String sem espaços em branco nas extremidades nem aspas delimitadoras.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Complexidade temporal: O(n), onde n = comprimento da string. </dd></dl>
 
 </div>
 </div>

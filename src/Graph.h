@@ -16,13 +16,13 @@ class Edge;
 /************************* Vertex **************************/
 
 /**
- * @brief Representa um vertice num grafo generico.
+ * @brief Representa um vértice num grafo genérico.
  *
- * Contem a informacao do no, a lista de arestas de saida (adj) e de entrada
- * (incoming), bem como campos auxiliares usados por varios algoritmos de grafos
- * (BFS, DFS, Dijkstra, SCC, Max-Flow, etc.).
+ * Contém o valor identificador do nó, a lista de arestas de saída (adj) e de
+ * entrada (incoming), bem como campos auxiliares utilizados por vários algoritmos
+ * de grafos (BFS, DFS, Dijkstra, SCC, fluxo máximo... ).
  *
- * @tparam T Tipo do identificador do vertice.
+ * @tparam T Tipo do identificador do vértice.
  */
 template <class T>
 class Vertex {
@@ -57,18 +57,18 @@ public:
 
     friend class MutablePriorityQueue<Vertex>;
 protected:
-    T info;                          ///< Valor/identificador do vertice.
-    std::vector<Edge<T> *> adj;      ///< Lista de arestas de saida.
+    T info;                          ///< Valor/identificador do vértice.
+    std::vector<Edge<T> *> adj;      ///< Lista de arestas de saída.
 
     bool visited = false;            ///< Auxiliar para DFS/BFS.
-    bool processing = false;         ///< Auxiliar para detecao de ciclos.
-    int low = -1, num = -1;          ///< Auxiliar para SCC (Tarjan).
-    unsigned int indegree;           ///< Grau de entrada (para ordenacao topologica).
-    double dist = 0;                 ///< Distancia acumulada (para Dijkstra/Prim).
-    Edge<T> *path = nullptr;         ///< Aresta do caminho (para reconstrucao).
+    bool processing = false;         ///< Auxiliar para detecção de ciclos.
+    int low = -1, num = -1;          ///< Auxiliares para SCCs (algoritmo de Tarjan).
+    unsigned int indegree;           ///< Grau de entrada (para ordenação topológica).
+    double dist = 0;                 ///< Distância acumulada (para Dijkstra/Prim).
+    Edge<T> *path = nullptr;         ///< Aresta do caminho (para reconstrução de caminhos).
 
     std::vector<Edge<T> *> incoming; ///< Lista de arestas de entrada.
-    int queueIndex = 0;              ///< Indice na MutablePriorityQueue.
+    int queueIndex = 0;              ///< Índice na MutablePriorityQueue.
 
     void deleteEdge(Edge<T> *edge);
 };
@@ -76,15 +76,16 @@ protected:
 /********************** Edge ****************************/
 
 /**
- * @brief Representa uma aresta num grafo generico.
+ * @brief Representa uma aresta dirigida num grafo genérico.
  *
- * Contem os vertices de origem e destino, o peso/capacidade da aresta, e campos
- * auxiliares para algoritmos de fluxo (flow, reverse) e selecao (selected).
+ * Contém os vértices de origem e destino, a capacidade (weight), o fluxo actual
+ * (flow) e um ponteiro para a aresta residual (reverse). Os campos flow e reverse
+ * são utilizados pelos algoritmos de fluxo máximo.
  *
- * Para redes de fluxo (Max-Flow), cada aresta forward tem uma aresta residual
- * associada via o ponteiro reverse, criada automaticamente por Graph::addEdge().
+ * Para redes de fluxo, cada aresta forward tem uma aresta residual associada via
+ * o ponteiro reverse, criada automaticamente por Graph::addEdge().
  *
- * @tparam T Tipo do identificador dos vertices.
+ * @tparam T Tipo do identificador dos vértices.
  */
 template <class T>
 class Edge {
@@ -103,30 +104,30 @@ public:
     void setFlow(double flow);
     void setWeight(double w);
 protected:
-    Vertex<T> * dest;        ///< Vertice de destino.
-    double weight;           ///< Peso ou capacidade da aresta.
+    Vertex<T> * dest;           ///< Vértice de destino.
+    double weight;              ///< Capacidade da aresta.
 
-    bool selected = false;   ///< Auxiliar para algoritmos de selecao.
+    bool selected = false;      ///< Auxiliar para algoritmos de selecção.
 
-    Vertex<T> *orig;         ///< Vertice de origem.
-    Edge<T> *reverse = nullptr; ///< Aresta residual (para Max-Flow).
+    Vertex<T> *orig;            ///< Vértice de origem.
+    Edge<T> *reverse = nullptr; ///< Aresta residual associada (para fluxo máximo).
 
-    double flow;             ///< Fluxo atual na aresta (para Max-Flow).
+    double flow;                ///< Fluxo actual na aresta (para fluxo máximo).
 };
 
 /********************** Graph ****************************/
 
 /**
- * @brief Representa um grafo generico com lista de adjacencia.
+ * @brief Representa um grafo genérico com lista de adjacência.
  *
- * Suporta grafos dirigidos e nao-dirigidos. Inclui metodos para adicionar/remover
- * vertices e arestas, e campos auxiliares para algoritmos como Floyd-Warshall.
+ * Suporta grafos dirigidos e não dirigidos. Inclui métodos para adicionar e
+ * remover vértices e arestas, bem como campos auxiliares.
  *
- * Para redes de fluxo, o metodo addEdge() cria automaticamente a aresta forward
+ * Para redes de fluxo, o método addEdge() cria automaticamente a aresta forward
  * e a correspondente aresta residual (reverse com capacidade 0), ligando-as
  * pelo ponteiro reverse.
  *
- * @tparam T Tipo do identificador dos vertices.
+ * @tparam T Tipo do identificador dos vértices.
  */
 template <class T>
 class Graph {
@@ -145,9 +146,9 @@ public:
     int getNumVertex() const;
 
     /**
-     * @brief Retorna o vertice com o identificador dado, ou nullptr se nao existir.
-     * @param id Identificador do vertice a procurar.
-     * @return Ponteiro para o vertice, ou nullptr.
+     * @brief Devolve o vértice com o identificador dado, ou nullptr se não existir.
+     * @param id Identificador do vértice a procurar.
+     * @return Ponteiro para o vértice encontrado, ou nullptr.
      */
     Vertex<T>* getVertex(const T &id) {
         for (auto v : getVertexSet()) {
@@ -160,9 +161,9 @@ public:
     std::vector<Vertex<T> *> getVertexSet() const;
 
 protected:
-    std::vector<Vertex<T> *> vertexSet; ///< Conjunto de vertices do grafo.
+    std::vector<Vertex<T> *> vertexSet; ///< Conjunto de vértices do grafo.
 
-    double ** distMatrix = nullptr; ///< Matriz de distancias (Floyd-Warshall).
+    double ** distMatrix = nullptr; ///< Matriz de distâncias (Floyd-Warshall).
     int **pathMatrix = nullptr;     ///< Matriz de caminhos (Floyd-Warshall).
 
     int findVertexIdx(const T &in) const;

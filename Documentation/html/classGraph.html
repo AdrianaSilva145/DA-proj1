@@ -78,7 +78,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Representa um grafo generico com lista de adjacencia.  
+<p>Representa um grafo genérico com lista de adjacência.  
  <a href="classGraph.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Graph_8h_source.html">Graph.h</a>&gt;</code></p>
@@ -104,7 +104,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0853eac15cdf0f06d63f4b8a7820ec71" id="r_a0853eac15cdf0f06d63f4b8a7820ec71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a0853eac15cdf0f06d63f4b8a7820ec71">getNumVertex</a> () <a class="el" href="classEdge.html">const</a></td></tr>
 <tr class="separator:a0853eac15cdf0f06d63f4b8a7820ec71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0153a97135b6c4b72e415a4dbb0f590b" id="r_a0153a97135b6c4b72e415a4dbb0f590b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVertex.html">Vertex</a>&lt; <a class="el" href="classEdge.html">T</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a0153a97135b6c4b72e415a4dbb0f590b">getVertex</a> (<a class="el" href="classEdge.html">const</a> <a class="el" href="classEdge.html">T</a> &amp;id)</td></tr>
-<tr class="memdesc:a0153a97135b6c4b72e415a4dbb0f590b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retorna o vertice com o identificador dado, ou nullptr se nao existir.  <br /></td></tr>
+<tr class="memdesc:a0153a97135b6c4b72e415a4dbb0f590b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Devolve o vértice com o identificador dado, ou nullptr se não existir.  <br /></td></tr>
 <tr class="separator:a0153a97135b6c4b72e415a4dbb0f590b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41624b03fcb6bd29e4df574a1ec58541" id="r_a41624b03fcb6bd29e4df574a1ec58541"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classVertex.html">Vertex</a>&lt; <a class="el" href="classEdge.html">T</a> &gt; * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a41624b03fcb6bd29e4df574a1ec58541">getVertexSet</a> () <a class="el" href="classEdge.html">const</a></td></tr>
 <tr class="separator:a41624b03fcb6bd29e4df574a1ec58541"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -117,10 +117,10 @@ Protected Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a26b3a6b9c61f02f5b2cd38ad4c6a4953" id="r_a26b3a6b9c61f02f5b2cd38ad4c6a4953"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classVertex.html">Vertex</a>&lt; <a class="el" href="classEdge.html">T</a> &gt; * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a26b3a6b9c61f02f5b2cd38ad4c6a4953">vertexSet</a></td></tr>
-<tr class="memdesc:a26b3a6b9c61f02f5b2cd38ad4c6a4953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conjunto de vertices do grafo.  <br /></td></tr>
+<tr class="memdesc:a26b3a6b9c61f02f5b2cd38ad4c6a4953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conjunto de vértices do grafo.  <br /></td></tr>
 <tr class="separator:a26b3a6b9c61f02f5b2cd38ad4c6a4953"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4517f4351bc7f0348369b25b7c0b44fe" id="r_a4517f4351bc7f0348369b25b7c0b44fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">double</a> **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#a4517f4351bc7f0348369b25b7c0b44fe">distMatrix</a> = <a class="el" href="classEdge.html">nullptr</a></td></tr>
-<tr class="memdesc:a4517f4351bc7f0348369b25b7c0b44fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matriz de distancias (Floyd-Warshall).  <br /></td></tr>
+<tr class="memdesc:a4517f4351bc7f0348369b25b7c0b44fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matriz de distâncias (Floyd-Warshall).  <br /></td></tr>
 <tr class="separator:a4517f4351bc7f0348369b25b7c0b44fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb9524726f8f3cda3115a0d03e3f6e09" id="r_afb9524726f8f3cda3115a0d03e3f6e09"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEdge.html">int</a> **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGraph.html#afb9524726f8f3cda3115a0d03e3f6e09">pathMatrix</a> = <a class="el" href="classEdge.html">nullptr</a></td></tr>
 <tr class="memdesc:afb9524726f8f3cda3115a0d03e3f6e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matriz de caminhos (Floyd-Warshall).  <br /></td></tr>
@@ -128,12 +128,12 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="classEdge.html">class</a> <a class="el" href="classEdge.html">T</a>&gt;<br />
-class Graph&lt; T &gt;</div><p>Representa um grafo generico com lista de adjacencia. </p>
-<p>Suporta grafos dirigidos e nao-dirigidos. Inclui metodos para adicionar/remover vertices e arestas, e campos auxiliares para algoritmos como Floyd-Warshall.</p>
-<p>Para redes de fluxo, o metodo <a class="el" href="classGraph.html#ac61af3aafe6277215f5a3b3cc7d58ce2">addEdge()</a> cria automaticamente a aresta forward e a correspondente aresta residual (reverse com capacidade 0), ligando-as pelo ponteiro reverse.</p>
+class Graph&lt; T &gt;</div><p>Representa um grafo genérico com lista de adjacência. </p>
+<p>Suporta grafos dirigidos e não dirigidos. Inclui métodos para adicionar e remover vértices e arestas, bem como campos auxiliares.</p>
+<p>Para redes de fluxo, o método <a class="el" href="classGraph.html#ac61af3aafe6277215f5a3b3cc7d58ce2">addEdge()</a> cria automaticamente a aresta forward e a correspondente aresta residual (reverse com capacidade 0), ligando-as pelo ponteiro reverse.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">T</td><td>Tipo do identificador dos vertices. </td></tr>
+    <tr><td class="paramname">T</td><td>Tipo do identificador dos vértices. </td></tr>
   </table>
   </dd>
 </dl>
@@ -362,14 +362,14 @@ template&lt;<a class="el" href="classEdge.html">class</a> <a class="el" href="cl
 </table>
 </div><div class="memdoc">
 
-<p>Retorna o vertice com o identificador dado, ou nullptr se nao existir. </p>
+<p>Devolve o vértice com o identificador dado, ou nullptr se não existir. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">id</td><td>Identificador do vertice a procurar. </td></tr>
+    <tr><td class="paramname">id</td><td>Identificador do vértice a procurar. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Ponteiro para o vertice, ou nullptr. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Ponteiro para o vértice encontrado, ou nullptr. </dd></dl>
 
 </div>
 </div>
@@ -465,7 +465,7 @@ template&lt;<a class="el" href="classEdge.html">class</a> <a class="el" href="cl
 </table>
 </div><div class="memdoc">
 
-<p>Matriz de distancias (Floyd-Warshall). </p>
+<p>Matriz de distâncias (Floyd-Warshall). </p>
 
 </div>
 </div>
@@ -517,7 +517,7 @@ template&lt;<a class="el" href="classEdge.html">class</a> <a class="el" href="cl
 </table>
 </div><div class="memdoc">
 
-<p>Conjunto de vertices do grafo. </p>
+<p>Conjunto de vértices do grafo. </p>
 
 </div>
 </div>

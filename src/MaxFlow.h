@@ -15,23 +15,24 @@ struct MaxFlow {
      * @brief Algoritmo de Edmonds-Karp para cálculo de fluxo máximo.
      *
      * Implementação do algoritmo de Ford-Fulkerson usando BFS para encontrar
-     * caminhos aumentantes (variante Edmonds-Karp). Em cada iteração, o BFS
-     * encontra o caminho mais curto (em número de arestas) da source ao sink
-     * com capacidade residual positiva. O fluxo é então aumentado ao longo
-     * desse caminho pelo valor do bottleneck.
+     * caminhos aumentantes conhecido como Edmonds-Karp. Em cada
+     * iteração, o BFS encontra o caminho mais curto (em número de arestas) da
+     * source ao sink com capacidade residual positiva. O fluxo é então aumentado
+     * ao longo desse caminho pelo valor do bottleneck (capacidade residual mínima
+     * no caminho). O processo repete-se até não existirem mais caminhos aumentantes.
      *
-     * A rede de fluxo deve ter arestas forward com capacidade w e arestas
+     * O grafo de fluxo deve ter arestas forward com capacidade w e arestas
      * residuais (reverse) com capacidade 0, ligadas pelo ponteiro reverse.
-     * O método Graph::addEdge() já cria automaticamente ambas as arestas.
+     * O método Graph::addEdge() cria automaticamente ambas as arestas.
      *
-     * @tparam T     Tipo do identificador dos vértices do grafo.
-     * @param g          Grafo de fluxo (modificado internamente com os fluxos).
+     * @tparam T         Tipo do identificador dos vértices do grafo.
+     * @param g          Grafo de fluxo (os fluxos são modificados internamente).
      * @param sourceInfo Identificador do vértice source.
      * @param sinkInfo   Identificador do vértice sink.
      * @return Valor do fluxo máximo encontrado.
      *
-     * @note Complexidade Temporal: O(V * E^2) onde V = vértices, E = arestas.
-     *       Esta é a complexidade garantida de Edmonds-Karp independentemente
+     * @note Complexidade temporal: O(V·E²), onde V = número de vértices e
+     *       E = número de arestas. Esta complexidade é garantida independentemente
      *       das capacidades das arestas, ao contrário do Ford-Fulkerson genérico.
      */
     template <class T>
@@ -47,7 +48,7 @@ struct MaxFlow {
 
         while (true) {
 
-            // BFS para encontrar caminho aumentante mais curto
+            // BFS para encontrar o caminho aumentante mais curto.
             std::queue<Vertex<T>*> q;
             std::unordered_map<Vertex<T>*, Edge<T>*> parent;
 
@@ -83,7 +84,7 @@ struct MaxFlow {
             if (!foundPath)
                 break;
 
-            // Calcular o bottleneck do caminho encontrado
+            // Calcular o bottleneck do caminho encontrado.
             double augFlow = std::numeric_limits<double>::max();
             Vertex<T>* v = sink;
 
@@ -93,7 +94,7 @@ struct MaxFlow {
                 v = e->getOrig();
             }
 
-            // Atualizar fluxos nas arestas forward e residuais
+            // Actualizar fluxos nas arestas forward e residuais.
             v = sink;
             while (v != source) {
                 Edge<T>* e = parent[v];

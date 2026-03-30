@@ -10,16 +10,27 @@
 #include <cctype>
 #include <algorithm>
 
-// Estados possiveis do parser durante a leitura do ficheiro CSV.
+/**
+ * @brief Estados possíveis do parser durante a leitura do ficheiro CSV.
+ *
+ * Cada valor representa a secção correntemente a ser processada.
+ */
 enum ParseState {
-    NONE,
-    SUBMISSIONS,
-    REVIEWERS,
-    PARAMETERS,
-    CONTROL
+    NONE,        ///< Nenhuma secção ativa (antes do primeiro cabeçalho).
+    SUBMISSIONS, ///< A processar a secção #Submissions.
+    REVIEWERS,   ///< A processar a secção #Reviewers.
+    PARAMETERS,  ///< A processar a secção #Parameters.
+    CONTROL      ///< A processar a secção #Control.
 };
 
-// Remove espacos em branco no inicio/fim e aspas de uma string. Complexidade: O(n)
+/**
+ * @brief Remove espaços em branco no início/fim e aspas de uma string.
+ *
+ * @param s String a limpar.
+ * @return String sem espaços em branco nas extremidades nem aspas delimitadoras.
+ *
+ * @note Complexidade temporal: O(n), onde n = comprimento da string.
+ */
 static std::string clean(const std::string &s) {
     std::string out = s;
     while (!out.empty() && std::isspace(out.front()))
@@ -55,6 +66,7 @@ bool Parser::parseCSV(const std::string& filepath, std::vector<Submission>& subm
 
         if (line.empty() || line[0] == '#') continue;
 
+        // Remover comentários inline (tudo após '#').
         size_t pos = line.find('#');
         if (pos != std::string::npos)
             line = line.substr(0, pos);

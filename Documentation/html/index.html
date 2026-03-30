@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Scientific Conference Assignment Tool: Scientific Conference Assignment Tool</title>
+<title>Scientific Conference Assignment Tool: Scientific Conference Assignments Tool</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,42 +69,41 @@ $(function() {
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">Scientific Conference <a class="el" href="classAssignment.html" title="Classe responsável pela geração de atribuições de revisões e análise de risco.">Assignment</a> Tool </div></div>
+  <div class="headertitle"><div class="title">Scientific Conference Assignments Tool </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_README"></a> Ferramenta de linha de comandos para atribuição automática de revisões de artigos científicos a revisores, desenvolvida no âmbito do Projeto I de <b>Análise e Síntese de Algoritmos (DA)</b> — <a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">L.EIC016</a>, Spring 2026.</p>
+<div class="textblock"><p><a class="anchor" id="md_README"></a> Ferramenta de linha de comandos para atribuição automática de revisões de artigos científicos a revisores, desenvolvida no âmbito do Projecto I de <b>Desenho de Algoritmos (DA)</b> — L.EIC016, Primavera 2026.</p>
 <p>O problema é formulado como uma rede de fluxo e resolvido com o algoritmo de <b>Max-Flow de Edmonds-Karp</b>.</p>
 <hr  />
 <h1><a class="anchor" id="autotoc_md2"></a>
 Estrutura do Projeto</h1>
-<p>O projeto está organizado da seguinte forma:</p>
 <div class="fragment"><div class="line">src/</div>
-<div class="line">├── main.cpp           - Ponto de entrada e menu interativo / modo batch</div>
-<div class="line">├── Parser.h/.cpp      - Leitura e validação do ficheiro CSV de entrada</div>
-<div class="line">├── Assignment.h/.cpp  - Geração de atribuições e análise de risco</div>
-<div class="line">├── Graph.h            - Estrutura de grafo (lista de adjacência)</div>
-<div class="line">├── MaxFlow.h/.cpp     - Algoritmo de Edmonds-Karp</div>
-<div class="line">├── Submission.h       - Estrutura de dados de uma submissão</div>
-<div class="line">├── Reviewer.h         - Estrutura de dados de um revisor</div>
-<div class="line">├── Parameters.h       - Parâmetros do problema (min/max revisões)</div>
-<div class="line">└── Control.h          - Configurações de controlo (modo, risco, output)</div>
+<div class="line">├── main.cpp           — Ponto de entrada e menu interativo / modo batch</div>
+<div class="line">├── Parser.h/.cpp      — Leitura e validação do ficheiro CSV de entrada</div>
+<div class="line">├── Assignment.h/.cpp  — Geração de atribuições e análise de risco</div>
+<div class="line">├── Graph.h            — Estrutura de grafo (lista de adjacência)</div>
+<div class="line">├── MaxFlow.h          — Algoritmo de Edmonds-Karp</div>
+<div class="line">├── Submission.h       — Estrutura de dados de uma submissão</div>
+<div class="line">├── Reviewer.h         — Estrutura de dados de um revisor</div>
+<div class="line">├── Parameters.h       — Parâmetros do problema (mínimo/máximo de revisões)</div>
+<div class="line">└── Control.h          — Configurações de controlo (modo, risco, ficheiro de saída)</div>
 </div><!-- fragment --><hr  />
 <h1><a class="anchor" id="autotoc_md4"></a>
 Como Compilar e Executar</h1>
 <h2><a class="anchor" id="autotoc_md5"></a>
 Modo Interativo</h2>
-<div class="fragment"><div class="line">./assignTool input.csv</div>
+<div class="fragment"><div class="line">./assignTool</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
 Modo Batch</h2>
 <div class="fragment"><div class="line">./assignTool -b input.csv risk.csv</div>
 </div><!-- fragment --><ul>
-<li><code><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">input.csv</a></code> — ficheiro de entrada com submissões, revisores e parâmetros</li>
-<li><code><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">risk.csv</a></code> — ficheiro de saída para a análise de risco (opcional)</li>
+<li>input.csv - ficheiro de entrada com submissões, revisores e parâmetros.</li>
+<li>risk.csv - ficheiro de saída para a análise de risco (opcional).</li>
 </ul>
 <hr  />
 <h1><a class="anchor" id="autotoc_md8"></a>
 Formato do Ficheiro de Entrada</h1>
-<p>O ficheiro de entrada é um CSV estruturado em secções delimitadas por <code>#</code>. Os campos são separados por vírgulas e tudo após <code>#</code> numa linha é ignorado.</p>
+<p>O ficheiro de entrada é um CSV estruturado em secções delimitadas por <code>#</code>. Os campos são separados por vírgulas e tudo o que apareça após <code>#</code> numa linha é ignorado como comentário.</p>
 <div class="fragment"><div class="line">#Submissions</div>
 <div class="line">#Id, Title, Authors, E-mail, Primary, Secondary</div>
 <div class="line">31, &quot;The Eternal Wheel of Reincarnation&quot;, Ralph Kholer, kholer@gmail.com, 3, 4</div>
@@ -129,32 +128,32 @@ Formato do Ficheiro de Entrada</h1>
 <h1><a class="anchor" id="autotoc_md10"></a>
 Parâmetros de Controlo</h1>
 <h2><a class="anchor" id="autotoc_md11"></a>
-&lt;tt&gt;GenerateAssignments&lt;/tt&gt;</h2>
+GenerateAssignments</h2>
 <p>Controla que domínios são considerados na atribuição:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Valor   </th><th class="markdownTableHeadNone">Descrição    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">0   </td><td class="markdownTableBodyNone">Atribuição calculada mas não reportada    </td></tr>
+<td class="markdownTableBodyNone">0   </td><td class="markdownTableBodyNone">Atribuição calculada mas não reportada no ficheiro de saída.    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">1   </td><td class="markdownTableBodyNone">Apenas domínios <b>primários</b> de submissões e revisores    </td></tr>
+<td class="markdownTableBodyNone">1   </td><td class="markdownTableBodyNone">Apenas domínios <b>primários</b> de submissões e revisores.    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">2   </td><td class="markdownTableBodyNone">Domínios primário <b>e secundário</b> da submissão; apenas primário do revisor    </td></tr>
+<td class="markdownTableBodyNone">2   </td><td class="markdownTableBodyNone">Domínios <b>primário e secundário</b> da submissão; apenas primário do revisor.    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">3   </td><td class="markdownTableBodyNone">Todos os domínios primários e secundários de ambos os lados   </td></tr>
+<td class="markdownTableBodyNone">3   </td><td class="markdownTableBodyNone">Todos os domínios primários e secundários de ambos os lados.   </td></tr>
 </table>
 <h2><a class="anchor" id="autotoc_md12"></a>
-&lt;tt&gt;RiskAnalysis&lt;/tt&gt;</h2>
+RiskAnalysis</h2>
 <p>Determina o tipo de análise de risco:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Valor   </th><th class="markdownTableHeadNone">Descrição    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">0   </td><td class="markdownTableBodyNone">Sem análise de risco    </td></tr>
+<td class="markdownTableBodyNone">0   </td><td class="markdownTableBodyNone">Sem análise de risco.    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">1   </td><td class="markdownTableBodyNone">Identifica revisores cuja ausência individual inviabiliza a atribuição    </td></tr>
+<td class="markdownTableBodyNone">1   </td><td class="markdownTableBodyNone">Identifica revisores cuja ausência individual inviabiliza a atribuição completa.    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">K &gt; 1   </td><td class="markdownTableBodyNone">Identifica combinações de K revisores cuja ausência conjunta inviabiliza a atribuição   </td></tr>
+<td class="markdownTableBodyNone">K &gt; 1   </td><td class="markdownTableBodyNone">Identifica combinações de K revisores cuja ausência conjunta inviabiliza a atribuição completa.   </td></tr>
 </table>
 <hr  />
 <h1><a class="anchor" id="autotoc_md14"></a>
@@ -162,17 +161,17 @@ Tarefas Implementadas</h1>
 <h2><a class="anchor" id="autotoc_md15"></a>
 T1 — Configuração Base</h2>
 <ul>
-<li><b><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">T1.1</a></b> Menu interativo e modo batch (<code>-b</code>)</li>
-<li><b><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">T1.2</a></b> Leitura e parsing do ficheiro CSV de entrada</li>
-<li><b><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">T1.3</a></b> Documentação Doxygen com análise de complexidade temporal</li>
+<li>Menu interativo e modo batch (<code>-b</code>).</li>
+<li>Leitura e parsing do ficheiro CSV de entrada.</li>
+<li>Documentação Doxygen com análise de complexidade temporal.</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md16"></a>
 T2 — Atribuição de Revisões</h2>
 <ul>
-<li><b><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">T2.1</a></b> Formulação Max-Flow sem análise de risco — <code>O(V · E²)</code> (Edmonds-Karp)</li>
-<li><b><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">T2.2</a></b> Análise de risco com K=1 — <code>O(N · V · E²)</code></li>
-<li><b><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">T2.3</a></b> Análise de risco com K&gt;1 — <code>O(C(N,K) · V · E²)</code> (enumeração de combinações)</li>
-<li><b><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">T2.4</a></b> Formulação geral com domínios primários e secundários — abordagem Min-Cost Max-Flow discutida</li>
+<li>Formulação Max-Flow sem análise de risco — <code>O(V · E²)</code> (Edmonds-Karp).</li>
+<li>Análise de risco com K=1 — <code>O(N · V · E²)</code>.</li>
+<li>Análise de risco com K&gt;1 — <code>O(C(N,K) · V · E²)</code>, por enumeração de combinações com <code>std::next_permutation</code>.</li>
+<li>Formulação geral com domínios primários e secundários (modos 2 e 3).</li>
 </ul>
 <hr  />
 <h1><a class="anchor" id="autotoc_md18"></a>
@@ -184,16 +183,32 @@ Formulação do Problema como Max-Flow</h1>
 <div class="line">                                                  │</div>
 <div class="line">                                                  ▼</div>
 <div class="line">                                           [Revisor j] ──(cap = MaxReviewsPerReviewer)──► Sink</div>
-</div><!-- fragment --><p>Um fluxo máximo igual a <code>|Submissões| × MinReviewsPerSubmission</code> indica uma atribuição completa e válida. Caso contrário, as submissões com revisões insuficientes são reportadas no ficheiro de saída.</p>
+</div><!-- fragment --><p>Cada vértice de submissão recebe capacidade <code>MinReviewsPerSubmission</code> a partir da source. Cada par submissão–revisor compatível é ligado por uma aresta de capacidade 1. Cada revisor tem uma aresta de saída para o sink com capacidade <code>MaxReviewsPerReviewer</code>.</p>
+<p>Um fluxo máximo igual a <code>|Submissões| × MinReviewsPerSubmission</code> indica uma atribuição completa e válida. Caso contrário, as submissões com revisões insuficientes são reportadas no ficheiro de saída.</p>
+<p>Os nós de submissão recebem identificadores <code>submissionId + 1000</code> e os de revisor <code>reviewerId + 2000</code>, de forma a evitar colisões com os nós especiais <code>-1</code> (source) e <code>-2</code> (sink).</p>
 <hr  />
 <h1><a class="anchor" id="autotoc_md20"></a>
 Análise de Risco</h1>
-<p>Para <b>K=1</b>, cada revisor é temporariamente removido da rede (capacidade da sua aresta para o Sink colocada a 0) e o Max-Flow é re-executado. Se o fluxo resultante for inferior ao necessário, esse revisor é considerado crítico.</p>
-<p>Para <b>K&gt;1</b>, todas as combinações <code>C(N,K)</code> de K revisores são enumeradas com <code>std::next_permutation</code>. A complexidade é exponencial em K, tornando-se inviável para valores elevados. Uma abordagem alternativa baseada em <b>corte mínimo de vértices</b> é discutida na documentação de <code><a class="el" href="classAssignment.html#a63857ff1868ffdf096db97903c5fac75" title="Efectua a analise de risco de forma autonoma (T2.2 e T2.3).">Assignment::generateRiskAnalysis</a></code>.</p>
+<p>A análise de risco determina quais os revisores (ou conjuntos de K revisores) cuja ausência impede que todas as submissões recebam o número mínimo de revisões exigido.</p>
+<p>O algoritmo funciona da seguinte forma para cada combinação de K revisores:</p>
+<ol type="1">
+<li>Para cada revisor na combinação, a capacidade da aresta revisor→sink é colocada a 0, simulando a sua ausência.</li>
+<li>Todos os fluxos do grafo são repostos a zero.</li>
+<li>O algoritmo de Edmonds-Karp é executado novamente sobre o grafo modificado.</li>
+<li>O fluxo obtido é comparado com o fluxo esperado (<code>|Submissões| × MinReviewsPerSubmission</code>). Se for inferior, essa combinação de revisores é considerada crítica.</li>
+<li>A capacidade da aresta revisor→sink é restaurada ao valor original (<code>MaxReviewsPerReviewer</code>) antes de se passar à combinação seguinte.</li>
+</ol>
+<p>As <code>C(N, K)</code> combinações são enumeradas através de um vector seletor booleano de tamanho N (número de revisores), com K posições verdadeiras, iterando por todas as permutações com <code>std::next_permutation</code>.</p>
+<h2><a class="anchor" id="autotoc_md21"></a>
+Complexidade</h2>
+<ul>
+<li><b>K = 1:</b> <code>O(N · V · E²)</code>, onde N é o número de revisores, V o número de vértices e E o número de arestas do grafo de fluxo.</li>
+<li><b>K &gt; 1:</b> <code>O(C(N, K) · V · E²)</code> — cresce exponencialmente com K, tornando-se inviável para valores elevados de K.</li>
+</ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md22"></a>
+<h1><a class="anchor" id="autotoc_md23"></a>
 Formato do Ficheiro de Saída</h1>
-<h2><a class="anchor" id="autotoc_md23"></a>
+<h2><a class="anchor" id="autotoc_md24"></a>
 Atribuição bem-sucedida</h2>
 <div class="fragment"><div class="line">#SubmissionId,ReviewerId,Match</div>
 <div class="line">31, 2, 4</div>
@@ -202,19 +217,71 @@ Atribuição bem-sucedida</h2>
 <div class="line">1, 87, 1</div>
 <div class="line">2, 31, 4</div>
 <div class="line">#Total: 2</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md24"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md25"></a>
 Atribuição incompleta</h2>
+<p>Quando o fluxo máximo é inferior ao necessário, o ficheiro de saída inclui adicionalmente:</p>
 <div class="fragment"><div class="line">#SubmissionId,Domain,MissingReviews</div>
 <div class="line">31, 3, 2</div>
 <div class="line">87, 1, 2</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md25"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md26"></a>
 Análise de risco</h2>
 <div class="fragment"><div class="line">#Risk Analysis: 1</div>
 <div class="line">1, 2</div>
-</div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md27"></a>
+</div><!-- fragment --><p>Para K &gt; 1, cada linha contém os identificadores dos K revisores que formam uma combinação crítica.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md28"></a>
+Documentação das Classes e Estruturas</h1>
+<h2><a class="anchor" id="autotoc_md29"></a>
+Submission</h2>
+<p>Representa uma submissão de artigo científico. Cada submissão tem um identificador único, título, autor(es), endereço de correio eletrónico e um ou dois tópicos científicos (domínio primário obrigatório, domínio secundário opcional representado por -1 quando ausente).</p>
+<h2><a class="anchor" id="autotoc_md30"></a>
+Reviewer</h2>
+<p>Representa um revisor científico. Cada revisor tem um identificador único, nome, endereço de correio eletrónico e uma ou duas áreas de especialização (primária obrigatória, secundária opcional representada por -1 quando ausente).</p>
+<h2><a class="anchor" id="autotoc_md31"></a>
+Parameters</h2>
+<p>Estrutura que agrega os parâmetros numéricos do problema, lidos da secção <code>#<a class="el" href="structParameters.html" title="Estrutura que representa os parâmetros numéricos do problema de atribuição de revisões.">Parameters</a></code> do ficheiro CSV: número mínimo de revisões por submissão, número máximo de revisões por revisor, e os pesos associados a domínios primários e secundários de submissões e revisores.</p>
+<h2><a class="anchor" id="autotoc_md32"></a>
+Control</h2>
+<p>Estrutura que agrega as configurações de controlo do programa, lidas da secção <code>#<a class="el" href="structControl.html" title="Estrutura que representa as configurações de controlo do programa.">Control</a></code> do ficheiro CSV: modo de geração de atribuições (GenerateAssignments), nível de análise de risco (RiskAnalysis) e nome do ficheiro de saída (OutputFileName).</p>
+<h2><a class="anchor" id="autotoc_md33"></a>
+Parser</h2>
+<p>Classe responsável pela leitura e parsing do ficheiro CSV de entrada. Itera o ficheiro linha a linha, identificando a secção corrente pelo cabeçalho (<code>#Submissions</code>, <code>#Reviewers</code>, <code>#<a class="el" href="structParameters.html" title="Estrutura que representa os parâmetros numéricos do problema de atribuição de revisões.">Parameters</a></code>, <code>#<a class="el" href="structControl.html" title="Estrutura que representa as configurações de controlo do programa.">Control</a></code>) e processando cada linha de dados em conformidade. Os comentários (linhas iniciadas por <code>#</code> ou conteúdo após <code>#</code>) e as linhas vazias são ignorados. Os campos opcionais (domínio secundário) são representados por -1 quando ausentes.</p>
+<p><b>Complexidade temporal:</b> <code>O(L · F)</code>, onde L é o número de linhas do ficheiro e F o número de campos por linha.</p>
+<h2><a class="anchor" id="autotoc_md34"></a>
+Graph&lt;T&gt;</h2>
+<p>Estrutura de grafo genérico com lista de adjacência, parametrizado pelo tipo do identificador dos vértices. Suporta grafos dirigidos, com operações de adição e remoção de vértices e arestas. O método <code>addEdge()</code> cria automaticamente a aresta forward e a correspondente aresta residual (reverse com capacidade 0), ligadas pelo ponteiro <code>reverse</code>, tornando o grafo imediatamente utilizável para algoritmos de fluxo. Inclui também campos auxiliares para outros algoritmos (Floyd-Warshall, Dijkstra, SCC).</p>
+<h2><a class="anchor" id="autotoc_md35"></a>
+Vertex&lt;T&gt;</h2>
+<p>Representa um vértice no grafo. Contém o valor identificador, a lista de arestas de saída (<code>adj</code>) e de entrada (<code>incoming</code>), e campos auxiliares utilizados por vários algoritmos: <code>visited</code> e <code>processing</code> para DFS/BFS, <code>low</code> e <code>num</code> para SCCs (Tarjan), <code>dist</code> e <code>path</code> para Dijkstra/Prim, e <code>queueIndex</code> para a fila de prioridade mutável.</p>
+<h2><a class="anchor" id="autotoc_md36"></a>
+Edge&lt;T&gt;</h2>
+<p>Representa uma aresta dirigida no grafo. Contém os vértices de origem e destino, a capacidade (<code>weight</code>), o fluxo atual (<code>flow</code>), e um ponteiro para a aresta residual (<code>reverse</code>). O campo <code>flow</code> é inicializado a zero e atualizado pelo algoritmo de Edmonds-Karp.</p>
+<h2><a class="anchor" id="autotoc_md37"></a>
+MaxFlow</h2>
+<p>Estrutura que encapsula o algoritmo de Edmonds-Karp para cálculo de fluxo máximo em redes. O algoritmo implementa a variante BFS do método de Ford-Fulkerson: em cada iteração, o BFS encontra o caminho aumentante mais curto (em número de arestas) da source ao sink com capacidade residual positiva, e aumenta o fluxo pelo valor do bottleneck desse caminho. O processo repete-se até não existirem mais caminhos aumentantes.</p>
+<p><b>Complexidade temporal:</b> <code>O(V · E²)</code>, onde V é o número de vértices e E o número de arestas. Esta complexidade é garantida independentemente das capacidades das arestas, ao contrário do Ford-Fulkerson genérico.</p>
+<h2><a class="anchor" id="autotoc_md38"></a>
+Assignment</h2>
+<p>Classe principal que implementa as duas funcionalidades centrais do projeto.</p>
+<p><b>generateAssignment</b> constrói a rede de fluxo, executa o Edmonds-Karp e escreve o ficheiro de saída com a atribuição. Suporta os modos 1, 2 e 3 de correspondência de domínios. Em caso de atribuição incompleta, reporta as submissões com revisões em falta. Se <code>control.riskAnalysis &gt; 0</code>, executa também a análise de risco e escreve os resultados no mesmo ficheiro de saída.</p>
+<p><b>Complexidade temporal:</b> <code>O(S·R + V·E²)</code>, onde S é o número de submissões, R o número de revisores, V o número de vértices e E o número de arestas. O passo de Edmonds-Karp é dominante.</p>
+<p><b>generateRiskAnalysis</b> reconstrói a rede de fluxo de raiz e executa a análise de risco de forma autónoma, escrevendo os resultados num ficheiro separado. Utiliza o mesmo algoritmo descrito na secção de Análise de Risco acima.</p>
+<p><b>Complexidade temporal:</b> <code>O(C(N, K) · V · E²)</code>.</p>
+<h2><a class="anchor" id="autotoc_md39"></a>
+MatchEdge (estrutura interna de Assignment.cpp)</h2>
+<p>Estrutura auxiliar que representa uma aresta de correspondência entre uma submissão e um revisor. Guarda os índices e identificadores necessários para reconstruir a atribuição após a execução do Max-Flow, juntamente com um ponteiro para a aresta forward correspondente no grafo de fluxo.</p>
+<h2><a class="anchor" id="autotoc_md40"></a>
+MutablePriorityQueue&lt;T&gt;</h2>
+<p>Implementação de uma fila de prioridade mutável (min-heap), utilizada pelo algoritmo de Dijkstra. Suporta as operações <code>insert</code>, <code>extractMin</code> e <code>decreaseKey</code>. A classe T parametrizante deve ter o campo <code>int queueIndex</code> acessível e o operador <code>&lt;</code> definido.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md42"></a>
 Autores</h1>
-<p>Projeto desenvolvido para a unidade curricular <b><a class="el" href="classEdge.html#ab976213419283ed754f42f57b195a288">L.EIC016</a> — Design of Algorithms</b>, Faculdade de Engenharia da Universidade do Porto (FEUP), Spring 2026. </p>
+<p>Projeto desenvolvido para a unidade curricular <b>L.EIC016 — Design of Algorithms</b> por:</p><ul>
+<li>Ana Carolina (<a href="#" onclick="location.href='mai'+'lto:'+'up2'+'02'+'403'+'63'+'4@u'+'p.'+'pt'; return false;">up202<span class="obfuscator">.nosp@m.</span>4036<span class="obfuscator">.nosp@m.</span>34@up<span class="obfuscator">.nosp@m.</span>.pt</a>)</li>
+<li>Adriana Silva (<a href="#" onclick="location.href='mai'+'lto:'+'up2'+'02'+'405'+'38'+'5@u'+'p.'+'pt'; return false;">up202<span class="obfuscator">.nosp@m.</span>4053<span class="obfuscator">.nosp@m.</span>85@up<span class="obfuscator">.nosp@m.</span>.pt</a>)</li>
+<li>Mariana Gouveia (<a href="#" onclick="location.href='mai'+'lto:'+'up2'+'02'+'406'+'70'+'2@u'+'p.'+'pt'; return false;">up202<span class="obfuscator">.nosp@m.</span>4067<span class="obfuscator">.nosp@m.</span>02@up<span class="obfuscator">.nosp@m.</span>.pt</a>)</li>
+</ul>
+<p>Faculdade de Engenharia da Universidade do Porto (FEUP), Março 2026. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
